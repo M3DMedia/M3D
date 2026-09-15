@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from m3d.domain.common.types import EvidenceId, HypothesisId, InvestigationId
@@ -42,3 +42,10 @@ class Hypothesis:
 
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("Hypothesis confidence must be between 0.0 and 1.0.")
+
+    def transition_to(self, target: str) -> Hypothesis:
+        """Return a new hypothesis with a validated target state."""
+        from m3d.domain.hypothesis.transitions import transition
+
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)
