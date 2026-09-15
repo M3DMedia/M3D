@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import Any
 
@@ -46,3 +46,10 @@ class Decision:
 
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("Decision confidence must be between 0.0 and 1.0.")
+
+    def transition_to(self, target: str) -> Decision:
+        """Return a new decision with a validated target state."""
+        from m3d.domain.decision.transitions import transition
+
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)

@@ -1,8 +1,5 @@
-"""Policy evaluation domain model."""
+"""Policy evaluation domain models."""
 
-from m3d.domain.policy_evaluation.policy_evaluation import (
-    POLICY_EVALUATION_STATES,
-    PolicyEvaluation,
-)
+from m3d.domain.policy_evaluation.policy_evaluation import PolicyEvaluation
 
-__all__ = ["POLICY_EVALUATION_STATES", "PolicyEvaluation"]
+__all__ = ["PolicyEvaluation"]

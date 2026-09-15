@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from m3d.domain.common.types import PolicyId
@@ -61,3 +61,10 @@ class Policy:
 
         if self.status not in POLICY_STATES:
             raise ValueError(f"Invalid policy status: {self.status}")
+
+    def transition_to(self, target: str) -> Policy:
+        """Return a new policy with a validated target state."""
+        from m3d.domain.policy.transitions import transition
+
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)

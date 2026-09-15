@@ -2,32 +2,28 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from datetime import datetime
 from typing import Any
 
 from m3d.domain.common.types import DecisionId, PolicyId
-
-POLICY_EVALUATION_STATES = frozenset(
-    {
-        "pending",
-        "evaluated",
-        "allowed",
-        "denied",
-        "approval_required",
-    }
+from m3d.domain.policy_evaluation.transitions import (
+    POLICY_EVALUATION_STATES,
+    transition,
 )
 
 
 @dataclass(frozen=True, slots=True)
 class PolicyEvaluation:
-    """The result of evaluating a policy against an operational decision."""
+    """An evaluation of a decision against an operational policy."""
 
     id: str
-    policy_id: PolicyId
     decision_id: DecisionId
-    result: str
-    rationale: str
+    policy_id: PolicyId
+    result: str | None = None
+    reason: str | None = None
     status: str = "pending"
+    evaluated_at: datetime | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -35,11 +31,10 @@ class PolicyEvaluation:
         if not self.id.strip():
             raise ValueError("Policy evaluation ID cannot be empty.")
 
-        if not self.result.strip():
-            raise ValueError("Policy evaluation result cannot be empty.")
-
-        if not self.rationale.strip():
-            raise ValueError("Policy evaluation rationale cannot be empty.")
-
         if self.status not in POLICY_EVALUATION_STATES:
-            raise ValueError(f"Invalid policy evaluation status: {self.status}")
+            raise ValueError(f"Invalid policy evaluation state: {self.status}")
+
+    def transition_to(self, target: str) -> PolicyEvaluation:
+        """Return a new policy evaluation with a validated target state."""
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)

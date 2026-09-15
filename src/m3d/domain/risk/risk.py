@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from m3d.domain.common.types import DecisionId, RiskId
@@ -49,3 +49,10 @@ class Risk:
 
         if self.status not in RISK_STATES:
             raise ValueError(f"Invalid risk status: {self.status}")
+
+    def transition_to(self, target: str) -> Risk:
+        """Return a new risk assessment with a validated target state."""
+        from m3d.domain.risk.transitions import transition
+
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)
