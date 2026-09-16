@@ -120,6 +120,19 @@ class InvestigationEngine:
         self._store.save_investigation(testing)
         return testing
 
+    def start_conclusion(
+        self,
+        investigation_id: InvestigationId,
+    ) -> Investigation:
+        """Transition a testing investigation into the conclusion stage."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        conclusion = investigation.transition_to("conclusion")
+        self._store.save_investigation(conclusion)
+        return conclusion
+
     def subscribe_to_event(
         self,
         event_type: str,
