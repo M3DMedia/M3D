@@ -45,6 +45,11 @@ class InvestigationStore(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_hypothesis(self, hypothesis_id: str) -> Hypothesis | None:
+        """Retrieve a hypothesis by identifier."""
+        raise NotImplementedError
+
+    @abstractmethod
     def get_hypotheses(self, investigation_id: str) -> list[Hypothesis]:
         """Retrieve hypotheses belonging to an investigation."""
         raise NotImplementedError

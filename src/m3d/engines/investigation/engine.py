@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from m3d.domain.common.types import EntityId, EnvironmentId, EvidenceId, InvestigationId, new_id
+from m3d.domain.common.types import (
+    EntityId,
+    EnvironmentId,
+    EvidenceId,
+    HypothesisId,
+    InvestigationId,
+    new_id,
+)
 from m3d.domain.event import Event
 from m3d.domain.evidence import Evidence
 from m3d.domain.hypothesis import Hypothesis
@@ -47,6 +54,10 @@ class InvestigationEngine:
     def get(self, investigation_id: InvestigationId) -> Investigation | None:
         """Retrieve an investigation by identifier."""
         return self._store.get_investigation(str(investigation_id))
+
+    def get_hypothesis(self, hypothesis_id: HypothesisId) -> Hypothesis | None:
+        """Retrieve a persisted hypothesis by identifier."""
+        return self._store.get_hypothesis(str(hypothesis_id))
 
     def scope(
         self,

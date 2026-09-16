@@ -47,6 +47,9 @@ class InMemoryInvestigationStore(InvestigationStore):
     def save_hypothesis(self, hypothesis: Hypothesis) -> None:
         self._hypotheses[hypothesis.id] = hypothesis
 
+    def get_hypothesis(self, hypothesis_id: str) -> Hypothesis | None:
+        return self._hypotheses.get(hypothesis_id)
+
     def get_hypotheses(self, investigation_id: str) -> list[Hypothesis]:
         return [
             item for item in self._hypotheses.values() if item.investigation_id == investigation_id

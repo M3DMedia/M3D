@@ -727,3 +727,27 @@ def test_complete_requires_conclusion_state() -> None:
         assert str(exc) == "Invalid investigation transition: created -> completed"
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_get_hypothesis_returns_persisted_hypothesis() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_get_hypothesis"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    engine.collect_evidence(
+        investigation_id=investigation.id,
+        target="service:nginx",
+        collection_method="environment.collect",
+    )
+    hypotheses = engine.generate_hypotheses(investigation.id)
+
+    assert hypotheses
+    assert engine.get_hypothesis(hypotheses[0].id) == hypotheses[0]
+
+
+def test_get_hypothesis_returns_none_for_unknown_hypothesis() -> None:
+    engine, _, _ = make_engine()
+
+    assert engine.get_hypothesis(HypothesisId("missing")) is None
