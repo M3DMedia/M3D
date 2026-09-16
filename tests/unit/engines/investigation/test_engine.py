@@ -577,3 +577,52 @@ def test_start_hypothesis_generation_requires_analyzing_state() -> None:
         assert str(exc) == "Invalid investigation transition: created -> hypothesis"
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_start_testing_transitions_and_persists_investigation() -> None:
+    engine, store, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_testing"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    collecting = engine.start_collection(scoped.id)
+    analyzing = engine.start_analysis(collecting.id)
+    hypothesis = engine.start_hypothesis_generation(analyzing.id)
+    testing = engine.start_testing(hypothesis.id)
+
+    assert testing.id == hypothesis.id
+    assert testing.status == "testing"
+    assert testing.scope == hypothesis.scope
+    assert store.get_investigation(str(hypothesis.id)) == testing
+
+
+def test_start_testing_rejects_missing_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.start_testing(InvestigationId("missing"))
+    except ValueError as exc:
+        assert str(exc) == "Investigation not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_start_testing_requires_hypothesis_state() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_testing"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.start_testing(investigation.id)
+    except ValueError as exc:
+        assert str(exc) == "Invalid investigation transition: created -> testing"
+    else:
+        raise AssertionError("Expected ValueError")

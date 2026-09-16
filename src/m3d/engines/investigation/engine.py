@@ -107,6 +107,19 @@ class InvestigationEngine:
         self._store.save_investigation(hypothesis)
         return hypothesis
 
+    def start_testing(
+        self,
+        investigation_id: InvestigationId,
+    ) -> Investigation:
+        """Transition a hypothesis-stage investigation into testing."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        testing = investigation.transition_to("testing")
+        self._store.save_investigation(testing)
+        return testing
+
     def subscribe_to_event(
         self,
         event_type: str,
