@@ -144,6 +144,31 @@ class InvestigationEngine:
             evidence,
         )
 
+    def evaluate_result(
+        self,
+        investigation_id: InvestigationId,
+        hypothesis_id: HypothesisId,
+    ) -> str:
+        """Evaluate the collected result against a persisted hypothesis."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+        if investigation.status != "testing":
+            raise ValueError("Investigation must be in testing state.")
+        hypothesis = self._store.get_hypothesis(str(hypothesis_id))
+        if hypothesis is None:
+            raise ValueError(f"Hypothesis not found: {hypothesis_id}")
+        if hypothesis.investigation_id != investigation.id:
+            raise ValueError(
+                "Hypothesis does not belong to the requested investigation."
+            )
+        evidence = self._store.get_evidence(str(investigation_id))
+        return self._reasoning.evaluate_result(
+            investigation,
+            hypothesis,
+            evidence,
+        )
+
     def start_testing(
         self,
         investigation_id: InvestigationId,
