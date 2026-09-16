@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from m3d.domain.common.types import (
     EntityId,
     EnvironmentId,
@@ -217,6 +219,34 @@ class InvestigationEngine:
         conclusion = investigation.transition_to("conclusion")
         self._store.save_investigation(conclusion)
         return conclusion
+
+    def generate_conclusion(
+        self,
+        investigation_id: InvestigationId,
+    ) -> Investigation:
+        """Generate and persist the investigation conclusion."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+        if investigation.status != "conclusion":
+            raise ValueError("Investigation must be in conclusion state.")
+
+        evidence = self._store.get_evidence(str(investigation_id))
+        hypotheses = self._store.get_hypotheses(str(investigation_id))
+        conclusion = self._reasoning.generate_conclusion(
+            investigation,
+            evidence,
+            hypotheses,
+        )
+        if not conclusion.strip():
+            raise ValueError("Investigation conclusion cannot be empty.")
+
+        concluded = replace(
+            investigation,
+            conclusion=conclusion,
+        )
+        self._store.save_investigation(concluded)
+        return concluded
 
     def complete(
         self,

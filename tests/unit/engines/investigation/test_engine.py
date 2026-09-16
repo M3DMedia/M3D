@@ -678,6 +678,85 @@ def test_start_conclusion_requires_testing_state() -> None:
         raise AssertionError("Expected ValueError")
 
 
+def test_generate_conclusion_generates_and_persists() -> None:
+    engine, store, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_generate_conclusion"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    collecting = engine.start_collection(scoped.id)
+    analyzing = engine.start_analysis(collecting.id)
+    hypothesis = engine.start_hypothesis_generation(analyzing.id)
+    testing = engine.start_testing(hypothesis.id)
+    conclusion = engine.start_conclusion(testing.id)
+
+    generated = engine.generate_conclusion(conclusion.id)
+
+    assert generated.id == conclusion.id
+    assert generated.status == "conclusion"
+    assert generated.conclusion == "The service process stopped."
+    assert store.get_investigation(str(conclusion.id)) == generated
+
+
+def test_generate_conclusion_rejects_missing_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.generate_conclusion(InvestigationId("missing"))
+    except ValueError as exc:
+        assert str(exc) == "Investigation not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_generate_conclusion_requires_conclusion_state() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_generate_conclusion_state"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.generate_conclusion(investigation.id)
+    except ValueError as exc:
+        assert str(exc) == "Investigation must be in conclusion state."
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_generate_conclusion_rejects_empty_conclusion() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_generate_empty_conclusion"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    collecting = engine.start_collection(scoped.id)
+    analyzing = engine.start_analysis(collecting.id)
+    hypothesis = engine.start_hypothesis_generation(analyzing.id)
+    testing = engine.start_testing(hypothesis.id)
+    conclusion = engine.start_conclusion(testing.id)
+
+    engine._reasoning.generate_conclusion = lambda *_args: "   "
+
+    try:
+        engine.generate_conclusion(conclusion.id)
+    except ValueError as exc:
+        assert str(exc) == "Investigation conclusion cannot be empty."
+    else:
+        raise AssertionError("Expected ValueError")
+
+
 def test_complete_transitions_and_persists_investigation() -> None:
     engine, store, _ = make_engine()
     investigation = engine.create(
