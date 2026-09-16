@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
+from typing import Any
 
-from m3d.domain.common.types import ActionId, AuthorizationId
+from m3d.domain.common.types import ActionId, AuthorizationId, utc_now
 
 AUTHORIZATION_STATES = frozenset(
     {
@@ -19,39 +20,32 @@ AUTHORIZATION_STATES = frozenset(
 
 @dataclass(frozen=True, slots=True)
 class Authorization:
-    """Permission granted to execute a specific operational action."""
+    """An authorization governing whether an operational action may proceed."""
 
     id: AuthorizationId
     action_id: ActionId
-    actor: str
-    authority: str
-    scope: str
-    decision: str
-    granted_at: datetime | None = None
-    expires_at: datetime | None = None
+    requested_by: str
     status: str = "requested"
-    metadata: dict[str, object] = field(default_factory=dict)
+    granted_by: str | None = None
+    reason: str | None = None
+    requested_at: datetime = field(default_factory=utc_now)
+    resolved_at: datetime | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Validate the authorization's required fields and state."""
-        if not self.actor.strip():
-            raise ValueError("Authorization actor cannot be empty.")
+        if not self.id.strip():
+            raise ValueError("Authorization ID cannot be empty.")
 
-        if not self.authority.strip():
-            raise ValueError("Authorization authority cannot be empty.")
-
-        if not self.scope.strip():
-            raise ValueError("Authorization scope cannot be empty.")
-
-        if not self.decision.strip():
-            raise ValueError("Authorization decision cannot be empty.")
+        if not self.requested_by.strip():
+            raise ValueError("Authorization requester cannot be empty.")
 
         if self.status not in AUTHORIZATION_STATES:
-            raise ValueError(f"Invalid authorization status: {self.status}")
+            raise ValueError(f"Invalid authorization state: {self.status}")
 
-        if (
-            self.granted_at is not None
-            and self.expires_at is not None
-            and self.expires_at <= self.granted_at
-        ):
-            raise ValueError("Authorization expiry must be after its grant time.")
+    def transition_to(self, target: str) -> Authorization:
+        """Return a new authorization with a validated target state."""
+        from m3d.domain.authorization.transitions import transition
+
+        new_status = transition(self.status, target)
+        return replace(self, status=new_status)

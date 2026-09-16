@@ -1,8 +1,5 @@
-"""Authorization domain model."""
+"""Authorization domain models."""
 
-from m3d.domain.authorization.authorization import (
-    AUTHORIZATION_STATES,
-    Authorization,
-)
+from m3d.domain.authorization.authorization import Authorization
 
-__all__ = ["AUTHORIZATION_STATES", "Authorization"]
+__all__ = ["Authorization"]
