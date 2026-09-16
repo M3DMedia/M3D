@@ -29,3 +29,12 @@ def test_environment_id_is_stable() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
 
     assert plugin.identify() == plugin.identify()
+
+def test_observe_references_the_discovered_host_entity() -> None:
+    plugin = LinuxEnvironmentPlugin("linux_test")
+
+    discovered = plugin.discover()[0]
+    observed = plugin.observe()[0]
+
+    assert observed.entity_id == discovered.id
+    assert observed.environment_id == plugin.identify()

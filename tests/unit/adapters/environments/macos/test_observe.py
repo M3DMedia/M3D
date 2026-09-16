@@ -36,14 +36,14 @@ def test_observe_reports_darwin_system() -> None:
     assert event.metadata["system"] == "Darwin"
 
 
-def test_observe_links_event_to_discovered_host() -> None:
+def test_observe_links_event_to_stable_host() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")
 
     event = plugin.observe()[0]
     host = plugin.discover()[0]
 
     assert event.entity_id is not None
-    assert event.entity_id != host.id
+    assert event.entity_id == host.id
 
 
 def test_observe_creates_unique_event_and_correlation_ids() -> None:

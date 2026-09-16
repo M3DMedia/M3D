@@ -36,10 +36,10 @@ def test_discover_reports_host_machine() -> None:
     assert entities[0].attributes["machine"] == platform.machine()
 
 
-def test_discover_returns_fresh_entity_ids() -> None:
+def test_discover_returns_stable_entity_ids() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")
 
     first = plugin.discover()[0]
     second = plugin.discover()[0]
 
-    assert first.id != second.id
+    assert first.id == second.id

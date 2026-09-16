@@ -18,6 +18,7 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
             raise ValueError("Environment ID cannot be empty.")
 
         self._environment_id = EnvironmentId(environment_id)
+        self._host_entity_id = EntityId(new_id("entity"))
 
     def identify(self) -> EnvironmentId:
         """Return the configured macOS environment identifier."""
@@ -30,7 +31,7 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
 
         return [
             Entity(
-                id=EntityId(new_id("entity")),
+                id=self._host_entity_id,
                 environment_id=self._environment_id,
                 type="host",
                 name=hostname,
