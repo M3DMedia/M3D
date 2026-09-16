@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import platform
+import subprocess
 
 from m3d.domain.common.types import EntityId, EnvironmentId, EventId, new_id, utc_now
 from m3d.domain.entity import Entity
@@ -18,7 +20,33 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
             raise ValueError("Environment ID cannot be empty.")
 
         self._environment_id = EnvironmentId(environment_id)
-        self._host_entity_id = EntityId(new_id("entity"))
+        self._host_entity_id = EntityId(self._build_host_entity_id())
+
+    def _build_host_entity_id(self) -> str:
+        """Build a deterministic opaque host entity ID for this macOS host."""
+        try:
+            result = subprocess.run(
+                ["system_profiler", "SPHardwareDataType"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            hardware_uuid = next(
+                (
+                    line.split(":", 1)[1].strip()
+                    for line in result.stdout.splitlines()
+                    if line.strip().startswith("Hardware UUID:")
+                ),
+                "",
+            )
+        except (OSError, subprocess.SubprocessError):
+            hardware_uuid = ""
+
+        identity_source = hardware_uuid or platform.node() or "unknown-host"
+        digest = hashlib.sha256(
+            f"{self._environment_id}:{identity_source}".encode()
+        ).hexdigest()
+        return f"entity_{digest[:32]}"
 
     def identify(self) -> EnvironmentId:
         """Return the configured macOS environment identifier."""

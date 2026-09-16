@@ -43,3 +43,13 @@ def test_discover_returns_stable_entity_ids() -> None:
     second = plugin.discover()[0]
 
     assert first.id == second.id
+
+
+def test_discover_returns_stable_entity_ids_across_instances() -> None:
+    first_plugin = MacOSEnvironmentPlugin("macos_test")
+    second_plugin = MacOSEnvironmentPlugin("macos_test")
+
+    first = first_plugin.discover()[0]
+    second = second_plugin.discover()[0]
+
+    assert first.id == second.id
