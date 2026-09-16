@@ -62,6 +62,8 @@ class InMemoryInvestigationStore(InvestigationStore):
         return [
             item for item in self._decisions.values() if item.investigation_id == investigation_id
         ]
+    def get_decision(self, decision_id: str) -> Decision | None:
+        return self._decisions.get(decision_id)
 
     def save_risk(self, risk: Risk) -> None:
         self._risks[risk.id] = risk

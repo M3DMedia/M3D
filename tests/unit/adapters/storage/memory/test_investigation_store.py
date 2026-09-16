@@ -115,6 +115,23 @@ def test_save_and_get_decisions_by_investigation() -> None:
     assert store.get_decisions("inv_test") == [decision]
 
 
+def test_get_decision_by_id() -> None:
+    store = InMemoryInvestigationStore()
+    decision = Decision(
+        id=DecisionId("decision_test"),
+        investigation_id=InvestigationId("inv_test"),
+        decision="Investigate the highest CPU process.",
+        rationale="It is the leading observed anomaly.",
+    )
+    store.save_decision(decision)
+    assert store.get_decision("decision_test") == decision
+
+
+def test_get_missing_decision_returns_none() -> None:
+    store = InMemoryInvestigationStore()
+    assert store.get_decision("missing") is None
+
+
 def test_save_and_get_risks_by_decision() -> None:
     store = InMemoryInvestigationStore()
     risk = Risk(

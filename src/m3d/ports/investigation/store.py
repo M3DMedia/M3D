@@ -65,6 +65,11 @@ class InvestigationStore(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_decision(self, decision_id: str) -> Decision | None:
+        """Retrieve a decision by identifier."""
+        raise NotImplementedError
+
+    @abstractmethod
     def save_risk(self, risk: Risk) -> None:
         """Persist a decision risk assessment."""
         raise NotImplementedError

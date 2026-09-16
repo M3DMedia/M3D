@@ -1,23 +1,29 @@
 """Tests for the investigation orchestration engine."""
 
 from collections.abc import Sequence
+from typing import Any, cast
 
 from m3d.adapters.event_bus.memory import InMemoryEventBus
 from m3d.adapters.storage.memory import InMemoryInvestigationStore
 from m3d.domain.common.types import (
+    DecisionId,
     EnvironmentId,
     EventId,
     HypothesisId,
     InvestigationId,
+    RiskId,
 )
+from m3d.domain.decision import Decision
 from m3d.domain.entity import Entity
 from m3d.domain.event import Event
 from m3d.domain.evidence import Evidence
 from m3d.domain.hypothesis import Hypothesis
 from m3d.domain.investigation import Investigation
+from m3d.domain.risk import Risk
 from m3d.engines.investigation import InvestigationEngine
 from m3d.ports.environment import EnvironmentPlugin
 from m3d.ports.reasoning import ReasoningProvider
+from m3d.ports.risk import RiskEngine
 
 
 class FakeEnvironment(EnvironmentPlugin):
@@ -54,6 +60,18 @@ class FakeEnvironment(EnvironmentPlugin):
             "target": target,
             "expected_outcome": expected_outcome,
         }
+
+
+class FakeRiskEngine(RiskEngine):
+    """Deterministic risk engine for investigation tests."""
+
+    def __init__(self, risk: Risk) -> None:
+        self._risk = risk
+        self.received_decision: Decision | None = None
+
+    def assess(self, decision: Decision) -> Risk:
+        self.received_decision = decision
+        return self._risk
 
 
 class FakeReasoningProvider(ReasoningProvider):
@@ -108,19 +126,33 @@ class FakeReasoningProvider(ReasoningProvider):
 
 def make_engine(
     environment_id: str = "env_test",
+    risk_engine: RiskEngine | None = None,
 ) -> tuple[InvestigationEngine, InMemoryInvestigationStore, InMemoryEventBus]:
     store = InMemoryInvestigationStore()
     event_bus = InMemoryEventBus()
     environment = FakeEnvironment(environment_id)
     reasoning = FakeReasoningProvider()
+
+    if risk_engine is None:
+        risk_engine = FakeRiskEngine(
+            Risk(
+                id=RiskId("risk_default"),
+                decision_id=DecisionId("decision_default"),
+                severity="low",
+                probability=0.1,
+                impact="Limited impact.",
+                reversibility="reversible",
+            )
+        )
+
     engine = InvestigationEngine(
         store=store,
         environment=environment,
         event_bus=event_bus,
         reasoning=reasoning,
+        risk_engine=risk_engine,
     )
     return engine, store, event_bus
-
 
 def make_event(
     event_type: str = "service_down",
@@ -747,7 +779,7 @@ def test_generate_conclusion_rejects_empty_conclusion() -> None:
     testing = engine.start_testing(hypothesis.id)
     conclusion = engine.start_conclusion(testing.id)
 
-    engine._reasoning.generate_conclusion = lambda *_args: "   "
+    cast(Any, engine._reasoning).generate_conclusion = lambda *_args: "   "
 
     try:
         engine.generate_conclusion(conclusion.id)
@@ -864,6 +896,43 @@ def test_propose_decision_requires_completed_investigation() -> None:
         )
     except ValueError as exc:
         assert str(exc) == "Investigation must be completed before proposing a decision."
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_assess_decision_risk_persists_risk() -> None:
+    decision = Decision(
+        id=DecisionId("decision_risk"),
+        investigation_id=InvestigationId("inv_risk"),
+        decision="Restart the affected service.",
+        rationale="The service process stopped.",
+    )
+    risk = Risk(
+        id=RiskId("risk_test"),
+        decision_id=decision.id,
+        severity="medium",
+        probability=0.5,
+        impact="Potential service degradation.",
+        reversibility="reversible",
+    )
+    risk_engine = FakeRiskEngine(risk)
+    engine, store, _ = make_engine(risk_engine=risk_engine)
+    store.save_decision(decision)
+
+    result = engine.assess_decision_risk(decision.id)
+
+    assert result == risk
+    assert risk_engine.received_decision == decision
+    assert store.get_risks(str(decision.id)) == [risk]
+
+
+def test_assess_decision_risk_rejects_missing_decision() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.assess_decision_risk(DecisionId("missing"))
+    except ValueError as exc:
+        assert str(exc) == "Decision not found: missing"
     else:
         raise AssertionError("Expected ValueError")
 
