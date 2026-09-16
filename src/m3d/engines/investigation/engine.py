@@ -18,10 +18,12 @@ from m3d.domain.event import Event
 from m3d.domain.evidence import Evidence
 from m3d.domain.hypothesis import Hypothesis
 from m3d.domain.investigation import Investigation
+from m3d.domain.policy_evaluation import PolicyEvaluation
 from m3d.domain.risk import Risk
 from m3d.ports.environment import EnvironmentPlugin
 from m3d.ports.event_bus import EventBus
 from m3d.ports.investigation import InvestigationStore
+from m3d.ports.policy import PolicyEngine, PolicyProvider
 from m3d.ports.reasoning import ReasoningProvider
 from m3d.ports.risk import RiskEngine
 
@@ -36,12 +38,16 @@ class InvestigationEngine:
         event_bus: EventBus,
         reasoning: ReasoningProvider,
         risk_engine: RiskEngine,
+        policy_engine: PolicyEngine,
+        policy_provider: PolicyProvider,
     ) -> None:
         self._store = store
         self._environment = environment
         self._event_bus = event_bus
         self._reasoning = reasoning
         self._risk_engine = risk_engine
+        self._policy_engine = policy_engine
+        self._policy_provider = policy_provider
 
     def create(
         self,
@@ -285,6 +291,26 @@ class InvestigationEngine:
         )
         self._store.save_decision(decision_record)
         return decision_record
+
+    def evaluate_policy(
+        self,
+        decision_id: DecisionId,
+    ) -> PolicyEvaluation:
+        """Evaluate and persist the policy decision associated with an operational decision."""
+        decision = self._store.get_decision(str(decision_id))
+        if decision is None:
+            raise ValueError(f"Decision not found: {decision_id}")
+
+        policies = self._policy_provider.get_policies()
+        evaluation = self._policy_engine.evaluate(decision, policies)
+
+        if evaluation.decision_id != decision.id:
+            raise ValueError(
+                f"Policy evaluation decision ID does not match decision: {decision.id}"
+            )
+
+        self._store.save_policy_evaluation(evaluation)
+        return evaluation
 
     def assess_decision_risk(
         self,
