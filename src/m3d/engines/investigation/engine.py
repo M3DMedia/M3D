@@ -48,6 +48,26 @@ class InvestigationEngine:
         """Retrieve an investigation by identifier."""
         return self._store.get_investigation(str(investigation_id))
 
+    def scope(
+        self,
+        investigation_id: InvestigationId,
+        scope: tuple[str, ...],
+    ) -> Investigation:
+        """Define the investigation scope and persist the updated investigation."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        if not scope:
+            raise ValueError("Investigation scope cannot be empty.")
+
+        scoped = investigation.transition_to(
+            "scoping",
+            scope=scope,
+        )
+        self._store.save_investigation(scoped)
+        return scoped
+
     def subscribe_to_event(
         self,
         event_type: str,

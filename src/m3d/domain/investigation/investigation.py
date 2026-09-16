@@ -50,9 +50,13 @@ class Investigation:
         if self.status not in INVESTIGATION_STATES:
             raise ValueError(f"Invalid investigation status: {self.status}")
 
-    def transition_to(self, target: str) -> Investigation:
-        """Return a new investigation with a validated target state."""
+    def transition_to(
+        self,
+        target: str,
+        **changes: Any,
+    ) -> Investigation:
+        """Return a new investigation with a validated target state and changes."""
         from m3d.domain.investigation.transitions import transition
 
         new_status = transition(self.status, target)
-        return replace(self, status=new_status)
+        return replace(self, status=new_status, **changes)

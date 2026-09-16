@@ -372,3 +372,57 @@ def test_generate_hypotheses_rejects_missing_investigation() -> None:
         assert str(exc) == "Investigation not found: missing"
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_scope_transitions_and_persists_investigation() -> None:
+    engine, store, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_scope"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+
+    assert scoped.id == investigation.id
+    assert scoped.status == "scoping"
+    assert scoped.scope == ("service:nginx", "host")
+    assert store.get_investigation(str(investigation.id)) == scoped
+
+
+def test_scope_rejects_missing_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.scope(
+            investigation_id=InvestigationId("missing"),
+            scope=("host",),
+        )
+    except ValueError as exc:
+        assert str(exc) == "Investigation not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_scope_rejects_empty_scope() -> None:
+    engine, _, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_scope"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.scope(
+            investigation_id=investigation.id,
+            scope=(),
+        )
+    except ValueError as exc:
+        assert str(exc) == "Investigation scope cannot be empty."
+    else:
+        raise AssertionError("Expected ValueError")
