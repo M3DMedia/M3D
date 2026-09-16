@@ -426,3 +426,53 @@ def test_scope_rejects_empty_scope() -> None:
         assert str(exc) == "Investigation scope cannot be empty."
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_start_collection_transitions_and_persists_investigation() -> None:
+    engine, store, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_collect"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+
+    collecting = engine.start_collection(scoped.id)
+
+    assert collecting.id == scoped.id
+    assert collecting.status == "collecting"
+    assert collecting.scope == scoped.scope
+    assert store.get_investigation(str(scoped.id)) == collecting
+
+
+def test_start_collection_rejects_missing_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.start_collection(InvestigationId("missing"))
+    except ValueError as exc:
+        assert str(exc) == "Investigation not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_start_collection_requires_scoping_state() -> None:
+    engine, _, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_collect"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.start_collection(investigation.id)
+    except ValueError as exc:
+        assert str(exc) == "Invalid investigation transition: created -> collecting"
+    else:
+        raise AssertionError("Expected ValueError")
