@@ -1,5 +1,5 @@
-"""Verification domain model."""
+"""Verification domain models."""
 
-from m3d.domain.verification.verification import VERIFICATION_STATES, Verification
+from m3d.domain.verification.verification import Verification
 
-__all__ = ["VERIFICATION_STATES", "Verification"]
+__all__ = ["Verification"]

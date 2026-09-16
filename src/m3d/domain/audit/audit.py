@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from typing import Any
 
-from m3d.domain.common.types import AuditRecordId
+from m3d.domain.common.types import AuditRecordId, utc_now
 
 AUDIT_STATES = frozenset(
     {
@@ -18,36 +18,37 @@ AUDIT_STATES = frozenset(
 
 @dataclass(frozen=True, slots=True)
 class AuditRecord:
-    """An immutable record of an operational state change or action."""
+    """An immutable record of an operational change or decision."""
 
     id: AuditRecordId
-    timestamp: datetime
+    event_type: str
     actor: str
-    operation: str
-    object_type: str
-    object_id: str
-    previous_state: Any = None
-    new_state: Any = None
+    description: str
+    state: str = "created"
     correlation_id: str = ""
-    status: str = "created"
+    timestamp: datetime = field(default_factory=utc_now)
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Validate the audit record's required fields and state."""
+        if not self.id.strip():
+            raise ValueError("Audit record ID cannot be empty.")
+
+        if not self.event_type.strip():
+            raise ValueError("Audit event type cannot be empty.")
+
         if not self.actor.strip():
             raise ValueError("Audit actor cannot be empty.")
 
-        if not self.operation.strip():
-            raise ValueError("Audit operation cannot be empty.")
+        if not self.description.strip():
+            raise ValueError("Audit description cannot be empty.")
 
-        if not self.object_type.strip():
-            raise ValueError("Audit object type cannot be empty.")
+        if self.state not in AUDIT_STATES:
+            raise ValueError(f"Invalid audit state: {self.state}")
 
-        if not self.object_id.strip():
-            raise ValueError("Audit object ID cannot be empty.")
+    def transition_to(self, target: str) -> AuditRecord:
+        """Return a new audit record with a validated target state."""
+        from m3d.domain.audit.transitions import transition
 
-        if self.status not in AUDIT_STATES:
-            raise ValueError(f"Invalid audit status: {self.status}")
-
-        if self.status == "sealed" and not self.correlation_id.strip():
-            raise ValueError("Sealed audit records must contain a correlation ID.")
+        new_state = transition(self.state, target)
+        return replace(self, state=new_state)

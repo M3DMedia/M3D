@@ -1,5 +1,5 @@
-"""Audit domain model."""
+"""Audit domain models."""
 
-from m3d.domain.audit.audit import AUDIT_STATES, AuditRecord
+from m3d.domain.audit.audit import AuditRecord
 
-__all__ = ["AUDIT_STATES", "AuditRecord"]
+__all__ = ["AuditRecord"]
