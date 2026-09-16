@@ -807,6 +807,67 @@ def test_complete_rejects_missing_conclusion() -> None:
         raise AssertionError("Expected ValueError")
 
 
+def test_propose_decision_persists_proposed_decision() -> None:
+    engine, store, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_decision"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    collecting = engine.start_collection(scoped.id)
+    evidence = engine.collect_evidence(
+        investigation_id=collecting.id,
+        target="host",
+        collection_method="system_inspection",
+    )
+    analyzing = engine.start_analysis(collecting.id)
+    hypothesis = engine.start_hypothesis_generation(analyzing.id)
+    testing = engine.start_testing(hypothesis.id)
+    conclusion = engine.start_conclusion(testing.id)
+    conclusion = engine.generate_conclusion(conclusion.id)
+    completed = engine.complete(conclusion.id)
+
+    decision = engine.propose_decision(
+        investigation_id=completed.id,
+        decision="Restart the affected service.",
+        rationale=completed.conclusion or "",
+        confidence=0.9,
+    )
+
+    assert str(decision.id).startswith("decision_")
+    assert decision.investigation_id == completed.id
+    assert decision.decision == "Restart the affected service."
+    assert decision.rationale == completed.conclusion
+    assert decision.evidence_ids == (evidence.id,)
+    assert decision.confidence == 0.9
+    assert decision.status == "proposed"
+    assert store.get_decisions(str(completed.id)) == [decision]
+
+
+def test_propose_decision_requires_completed_investigation() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_incomplete_decision"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.propose_decision(
+            investigation_id=investigation.id,
+            decision="Restart the affected service.",
+            rationale="The service process stopped.",
+        )
+    except ValueError as exc:
+        assert str(exc) == "Investigation must be completed before proposing a decision."
+    else:
+        raise AssertionError("Expected ValueError")
+
+
 def test_complete_rejects_missing_investigation() -> None:
     engine, _, _ = make_engine()
 

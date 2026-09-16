@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from m3d.domain.common.types import (
+    DecisionId,
     EntityId,
     EnvironmentId,
     EvidenceId,
@@ -12,6 +13,7 @@ from m3d.domain.common.types import (
     InvestigationId,
     new_id,
 )
+from m3d.domain.decision import Decision
 from m3d.domain.event import Event
 from m3d.domain.evidence import Evidence
 from m3d.domain.hypothesis import Hypothesis
@@ -247,6 +249,38 @@ class InvestigationEngine:
         )
         self._store.save_investigation(concluded)
         return concluded
+
+    def propose_decision(
+        self,
+        investigation_id: InvestigationId,
+        decision: str,
+        rationale: str,
+        confidence: float = 0.0,
+    ) -> Decision:
+        """Create and persist a proposed decision for an investigation."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+        if investigation.status != "completed":
+            raise ValueError("Investigation must be completed before proposing a decision.")
+        if not investigation.conclusion or not investigation.conclusion.strip():
+            raise ValueError("Investigation conclusion is required before proposing a decision.")
+        if not decision.strip():
+            raise ValueError("Decision cannot be empty.")
+        if not rationale.strip():
+            raise ValueError("Decision rationale cannot be empty.")
+
+        evidence = self._store.get_evidence(str(investigation_id))
+        decision_record = Decision(
+            id=DecisionId(new_id("decision")),
+            investigation_id=investigation.id,
+            decision=decision,
+            rationale=rationale,
+            evidence_ids=tuple(item.id for item in evidence),
+            confidence=confidence,
+        )
+        self._store.save_decision(decision_record)
+        return decision_record
 
     def complete(
         self,
