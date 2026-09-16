@@ -133,6 +133,19 @@ class InvestigationEngine:
         self._store.save_investigation(conclusion)
         return conclusion
 
+    def complete(
+        self,
+        investigation_id: InvestigationId,
+    ) -> Investigation:
+        """Transition a conclusion-stage investigation into completed."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        completed = investigation.transition_to("completed")
+        self._store.save_investigation(completed)
+        return completed
+
     def subscribe_to_event(
         self,
         event_type: str,
