@@ -103,3 +103,43 @@ def test_runtime_publishes_observed_events() -> None:
     assert len(events) == 1
     assert events[0].type == "host.observed"
     assert received == events
+
+
+def test_runtime_accepts_macos_environment_plugin() -> None:
+    from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
+
+    plugin = MacOSEnvironmentPlugin("macos_test")
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
+
+    assert runtime.environment is plugin
+
+
+def test_runtime_operates_against_macos_environment() -> None:
+    from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
+
+    plugin = MacOSEnvironmentPlugin("macos_test")
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
+
+    assert runtime.identify_environment() == EnvironmentId("macos_test")
+
+    entities = runtime.discover()
+    assert len(entities) == 1
+    assert entities[0].environment_id == EnvironmentId("macos_test")
+    assert entities[0].type == "host"
+
+    events = runtime.observe()
+    assert len(events) == 1
+    assert events[0].type == "host.observed"
+
+    collected = runtime.collect("host")
+    assert collected["target"] == "host"
+    assert collected["system"] == "Darwin"
+
+    executed = runtime.execute("get_hostname", {})
+    assert executed["operation"] == "get_hostname"
+    assert executed["hostname"]
+
+    verification = runtime.verify("host", "host_present")
+    assert verification["verified"] is True
