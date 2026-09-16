@@ -10,7 +10,6 @@ from m3d.domain.common.types import (
     ActionId,
     AuthorizationId,
     DecisionId,
-    EntityId,
     EnvironmentId,
     EvidenceId,
     HypothesisId,
@@ -26,7 +25,6 @@ from m3d.domain.investigation import Investigation
 from m3d.domain.policy_evaluation import PolicyEvaluation
 from m3d.domain.risk import Risk
 from m3d.domain.verification import Verification
-
 
 TIMESTAMP = datetime(2026, 1, 1, tzinfo=UTC)
 ENVIRONMENT_ID = EnvironmentId("env_test")
