@@ -6,13 +6,19 @@ from m3d.domain.common.types import EnvironmentId
 from m3d.domain.entity import Entity
 from m3d.domain.event import Event
 from m3d.ports.environment import EnvironmentPlugin
+from m3d.ports.event_bus import EventBus
 
 
 class M3DRuntime:
     """Coordinate M3D operations against a configured environment."""
 
-    def __init__(self, environment: EnvironmentPlugin) -> None:
+    def __init__(
+        self,
+        environment: EnvironmentPlugin,
+        event_bus: EventBus,
+    ) -> None:
         self._environment = environment
+        self._event_bus = event_bus
 
     @property
     def environment(self) -> EnvironmentPlugin:
@@ -30,6 +36,15 @@ class M3DRuntime:
     def observe(self) -> list[Event]:
         """Observe the configured environment for events."""
         return self._environment.observe()
+
+    def observe_and_publish(self) -> list[Event]:
+        """Observe the environment and publish each resulting event."""
+        events = self.observe()
+
+        for event in events:
+            self._event_bus.publish(event)
+
+        return events
 
     def collect(self, target: str) -> dict[str, object]:
         """Collect detailed information through the configured environment."""

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from m3d.adapters.environments.linux import LinuxEnvironmentPlugin
+from m3d.adapters.event_bus.memory import InMemoryEventBus
 from m3d.domain.common.types import EnvironmentId
 from m3d.runtime import M3DRuntime
 
@@ -10,21 +11,24 @@ from m3d.runtime import M3DRuntime
 def test_runtime_accepts_environment_plugin() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
 
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     assert runtime.environment is plugin
 
 
 def test_runtime_identifies_environment() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     assert runtime.identify_environment() == EnvironmentId("linux_test")
 
 
 def test_runtime_discovers_environment() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     entities = runtime.discover()
 
@@ -35,7 +39,8 @@ def test_runtime_discovers_environment() -> None:
 
 def test_runtime_observes_environment() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     events = runtime.observe()
 
@@ -46,7 +51,8 @@ def test_runtime_observes_environment() -> None:
 
 def test_runtime_collects_environment_data() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     data = runtime.collect("host")
 
@@ -57,7 +63,8 @@ def test_runtime_collects_environment_data() -> None:
 
 def test_runtime_executes_environment_operation() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     result = runtime.execute("get_hostname", {})
 
@@ -67,10 +74,32 @@ def test_runtime_executes_environment_operation() -> None:
 
 def test_runtime_verifies_environment_outcome() -> None:
     plugin = LinuxEnvironmentPlugin("linux_test")
-    runtime = M3DRuntime(plugin)
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
 
     result = runtime.verify("host", "host_present")
 
     assert result["target"] == "host"
     assert result["expected_outcome"] == "host_present"
     assert result["verified"] is True
+
+
+def test_runtime_publishes_observed_events() -> None:
+    plugin = LinuxEnvironmentPlugin("linux_test")
+    event_bus = InMemoryEventBus()
+    runtime = M3DRuntime(plugin, event_bus)
+
+    events = runtime.observe_and_publish()
+
+    received: list[object] = []
+
+    def handler(event: object) -> None:
+        received.append(event)
+
+    event_bus.subscribe("host.observed", handler)
+
+    events = runtime.observe_and_publish()
+
+    assert len(events) == 1
+    assert events[0].type == "host.observed"
+    assert received == events
