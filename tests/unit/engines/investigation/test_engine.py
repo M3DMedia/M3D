@@ -773,12 +773,38 @@ def test_complete_transitions_and_persists_investigation() -> None:
     hypothesis = engine.start_hypothesis_generation(analyzing.id)
     testing = engine.start_testing(hypothesis.id)
     conclusion = engine.start_conclusion(testing.id)
+    conclusion = engine.generate_conclusion(conclusion.id)
     completed = engine.complete(conclusion.id)
 
     assert completed.id == conclusion.id
     assert completed.status == "completed"
     assert completed.scope == conclusion.scope
     assert store.get_investigation(str(conclusion.id)) == completed
+
+
+def test_complete_rejects_missing_conclusion() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_missing_conclusion"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    scoped = engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    collecting = engine.start_collection(scoped.id)
+    analyzing = engine.start_analysis(collecting.id)
+    hypothesis = engine.start_hypothesis_generation(analyzing.id)
+    testing = engine.start_testing(hypothesis.id)
+    conclusion = engine.start_conclusion(testing.id)
+
+    try:
+        engine.complete(conclusion.id)
+    except ValueError as exc:
+        assert str(exc) == "Investigation conclusion is required before completion."
+    else:
+        raise AssertionError("Expected ValueError")
 
 
 def test_complete_rejects_missing_investigation() -> None:

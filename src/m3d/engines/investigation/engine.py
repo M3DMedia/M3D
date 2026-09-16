@@ -258,6 +258,8 @@ class InvestigationEngine:
             raise ValueError(f"Investigation not found: {investigation_id}")
 
         completed = investigation.transition_to("completed")
+        if not investigation.conclusion or not investigation.conclusion.strip():
+            raise ValueError("Investigation conclusion is required before completion.")
         self._store.save_investigation(completed)
         return completed
 
