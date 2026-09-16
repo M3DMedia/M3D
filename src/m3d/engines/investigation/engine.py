@@ -81,6 +81,19 @@ class InvestigationEngine:
         self._store.save_investigation(collecting)
         return collecting
 
+    def start_analysis(
+        self,
+        investigation_id: InvestigationId,
+    ) -> Investigation:
+        """Transition a collecting investigation into analysis."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        analyzing = investigation.transition_to("analyzing")
+        self._store.save_investigation(analyzing)
+        return analyzing
+
     def subscribe_to_event(
         self,
         event_type: str,
