@@ -1019,3 +1019,201 @@ def test_evaluate_result_requires_testing_state() -> None:
         assert str(exc) == "Investigation must be in testing state."
     else:
         raise AssertionError("Expected ValueError")
+
+
+def test_resolve_hypothesis_persists_supported_state() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_resolve_supported"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    engine.start_collection(investigation.id)
+    engine.collect_evidence(
+        investigation_id=investigation.id,
+        target="service:nginx",
+        collection_method="environment.collect",
+    )
+    engine.start_analysis(investigation.id)
+    engine.start_hypothesis_generation(investigation.id)
+    hypotheses = engine.generate_hypotheses(investigation.id)
+    engine.start_testing(investigation.id)
+    engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="testing",
+    )
+
+    resolved = engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="supported",
+    )
+
+    assert resolved.status == "supported"
+    assert engine.get_hypothesis(hypotheses[0].id) == resolved
+
+
+def test_resolve_hypothesis_persists_weakened_state() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_resolve_weakened"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    engine.start_collection(investigation.id)
+    engine.start_analysis(investigation.id)
+    engine.start_hypothesis_generation(investigation.id)
+    hypotheses = engine.generate_hypotheses(investigation.id)
+    engine.start_testing(investigation.id)
+    engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="testing",
+    )
+
+    resolved = engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="weakened",
+    )
+
+    assert resolved.status == "weakened"
+    assert engine.get_hypothesis(hypotheses[0].id) == resolved
+
+
+def test_resolve_hypothesis_persists_rejected_state() -> None:
+    engine, _, _ = make_engine()
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_resolve_rejected"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+    engine.scope(
+        investigation_id=investigation.id,
+        scope=("service:nginx", "host"),
+    )
+    engine.start_collection(investigation.id)
+    engine.start_analysis(investigation.id)
+    engine.start_hypothesis_generation(investigation.id)
+    hypotheses = engine.generate_hypotheses(investigation.id)
+    engine.start_testing(investigation.id)
+    engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="testing",
+    )
+
+    resolved = engine.resolve_hypothesis(
+        investigation_id=investigation.id,
+        hypothesis_id=hypotheses[0].id,
+        target_status="rejected",
+    )
+
+    assert resolved.status == "rejected"
+    assert engine.get_hypothesis(hypotheses[0].id) == resolved
+
+def test_resolve_hypothesis_rejects_unknown_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    try:
+        engine.resolve_hypothesis(
+            investigation_id=InvestigationId("missing"),
+            hypothesis_id=HypothesisId("hyp_test"),
+            target_status="testing",
+        )
+    except ValueError as exc:
+        assert str(exc) == "Investigation not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_resolve_hypothesis_rejects_unknown_hypothesis() -> None:
+    engine, _, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_resolve_unknown_hypothesis"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    try:
+        engine.resolve_hypothesis(
+            investigation_id=investigation.id,
+            hypothesis_id=HypothesisId("missing"),
+            target_status="testing",
+        )
+    except ValueError as exc:
+        assert str(exc) == "Hypothesis not found: missing"
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_resolve_hypothesis_rejects_hypothesis_from_another_investigation() -> None:
+    engine, _, _ = make_engine()
+
+    first = engine.create(
+        investigation_id=InvestigationId("inv_resolve_first"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    second = engine.create(
+        investigation_id=InvestigationId("inv_resolve_second"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    engine.collect_evidence(
+        investigation_id=first.id,
+        target="service:nginx",
+        collection_method="environment.collect",
+    )
+    hypotheses = engine.generate_hypotheses(first.id)
+
+    try:
+        engine.resolve_hypothesis(
+            investigation_id=second.id,
+            hypothesis_id=hypotheses[0].id,
+            target_status="testing",
+        )
+    except ValueError as exc:
+        assert str(exc) == "Hypothesis does not belong to the requested investigation."
+    else:
+        raise AssertionError("Expected ValueError")
+
+
+def test_resolve_hypothesis_rejects_invalid_transition() -> None:
+    engine, _, _ = make_engine()
+
+    investigation = engine.create(
+        investigation_id=InvestigationId("inv_resolve_invalid_transition"),
+        trigger="service_alert",
+        objective="Determine why the service is unavailable.",
+    )
+
+    engine.collect_evidence(
+        investigation_id=investigation.id,
+        target="service:nginx",
+        collection_method="environment.collect",
+    )
+    hypotheses = engine.generate_hypotheses(investigation.id)
+
+    try:
+        engine.resolve_hypothesis(
+            investigation_id=investigation.id,
+            hypothesis_id=hypotheses[0].id,
+            target_status="supported",
+        )
+    except ValueError as exc:
+        assert str(exc) == "Invalid hypothesis transition: proposed -> supported"
+    else:
+        raise AssertionError("Expected ValueError")

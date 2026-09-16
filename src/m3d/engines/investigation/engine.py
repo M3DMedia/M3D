@@ -169,6 +169,29 @@ class InvestigationEngine:
             evidence,
         )
 
+    def resolve_hypothesis(
+        self,
+        investigation_id: InvestigationId,
+        hypothesis_id: HypothesisId,
+        target_status: str,
+    ) -> Hypothesis:
+        """Transition and persist a hypothesis to its requested state."""
+        investigation = self._store.get_investigation(str(investigation_id))
+        if investigation is None:
+            raise ValueError(f"Investigation not found: {investigation_id}")
+
+        hypothesis = self._store.get_hypothesis(str(hypothesis_id))
+        if hypothesis is None:
+            raise ValueError(f"Hypothesis not found: {hypothesis_id}")
+        if hypothesis.investigation_id != investigation.id:
+            raise ValueError(
+                "Hypothesis does not belong to the requested investigation."
+            )
+
+        resolved = hypothesis.transition_to(target_status)
+        self._store.save_hypothesis(resolved)
+        return resolved
+
     def start_testing(
         self,
         investigation_id: InvestigationId,
