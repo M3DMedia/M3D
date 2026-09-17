@@ -6,6 +6,7 @@ import pytest
 
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 
+pytestmark = pytest.mark.macos
 
 def test_verify_host_present() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")

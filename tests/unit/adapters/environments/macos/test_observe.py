@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import platform
 
+import pytest
+
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 from m3d.domain.common.types import EnvironmentId
 
+pytestmark = pytest.mark.macos
 
 def test_observe_returns_host_observation_event() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")

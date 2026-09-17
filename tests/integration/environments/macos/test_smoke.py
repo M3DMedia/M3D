@@ -1,5 +1,8 @@
+import pytest
+
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 
+pytestmark = pytest.mark.macos
 
 def test_macos_environment_smoke() -> None:
     plugin = MacOSEnvironmentPlugin()

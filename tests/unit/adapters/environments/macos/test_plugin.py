@@ -7,6 +7,7 @@ import pytest
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 from m3d.domain.common.types import EnvironmentId
 
+pytestmark = pytest.mark.macos
 
 def test_identify_returns_configured_environment_id() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")

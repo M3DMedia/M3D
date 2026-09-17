@@ -1,3 +1,5 @@
+import pytest
+
 from m3d.adapters.authorization.manual import ManualAuthorizationProvider
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 from m3d.adapters.storage.memory.audit_store import InMemoryAuditStore
@@ -41,6 +43,9 @@ class MacOSActionExecutor(ActionExecutor):
             },
         )
 
+
+
+pytestmark = pytest.mark.macos
 
 def test_real_macos_operational_lifecycle():
     environment = MacOSEnvironmentPlugin()

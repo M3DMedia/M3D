@@ -8,6 +8,7 @@ import pytest
 
 from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 
+pytestmark = pytest.mark.macos
 
 def test_execute_get_hostname() -> None:
     plugin = MacOSEnvironmentPlugin("macos_test")
