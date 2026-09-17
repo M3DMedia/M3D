@@ -2,6 +2,8 @@
 
 # M3D — Operational Intelligence Runtime
 
+[![CI](https://github.com/M3DMedia/M3D/actions/workflows/ci.yml/badge.svg)](https://github.com/M3DMedia/M3D/actions/workflows/ci.yml)
+
 **An open-source runtime for safe, autonomous AI operations.**
 
 [![License](https://img.shields.io/github/license/M3DMedia/M3D?style=flat-square)](https://github.com/M3DMedia/M3D/blob/main/LICENSE)
