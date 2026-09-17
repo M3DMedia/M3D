@@ -34,6 +34,9 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "macos: tests that require a macOS environment",
+]
 
 [tool.ruff]
 line-length = 100

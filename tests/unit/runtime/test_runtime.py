@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from m3d.adapters.environments.linux import LinuxEnvironmentPlugin
 from m3d.adapters.event_bus.memory import InMemoryEventBus
 from m3d.domain.common.types import EnvironmentId
@@ -115,6 +117,7 @@ def test_runtime_accepts_macos_environment_plugin() -> None:
     assert runtime.environment is plugin
 
 
+@pytest.mark.macos
 def test_runtime_operates_against_macos_environment() -> None:
     from m3d.adapters.environments.macos import MacOSEnvironmentPlugin
 
