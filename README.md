@@ -1,207 +1,207 @@
-<  n me="re dme-top"></ >
+<a name="readme-top"></a>
 
-# M3D — Oper tion l Intelligence R ntime
+# M3D — Operational Intelligence Runtime
 
-**An open-so rce r ntime  or s  e,   tonomo s AI oper tions.**
+**An open-source runtime for safe, autonomous AI operations.**
 
-[![License](https://img.shields.io/gith b/license/M3DMedi /M3D?style= l t-sq  re)](https://gith b.com/M3DMedi /M3D/blob/m in/LICENSE)
-[![Python](https://img.shields.io/b dge/Python-3.13% B-3  6AB?style= l t-sq  re&logo=python&logoColor=white)](https://www.python.org/)
-[![GitH b St rs](https://img.shields.io/gith b/st rs/M3DMedi /M3D?style= l t-sq  re&logo=gith b)](https://gith b.com/M3DMedi /M3D/st rg zers)
-[![GitH b Iss es](https://img.shields.io/gith b/iss es/M3DMedi /M3D?style= l t-sq  re)](https://gith b.com/M3DMedi /M3D/iss es)
+[![License](https://img.shields.io/github/license/M3DMedia/M3D?style=flat-square)](https://github.com/M3DMedia/M3D/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.13%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![GitHub Stars](https://img.shields.io/github/stars/M3DMedia/M3D?style=flat-square&logo=github)](https://github.com/M3DMedia/M3D/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/M3DMedia/M3D?style=flat-square)](https://github.com/M3DMedia/M3D/issues)
 
-[Q ick St rt](#q ick-st rt) · [Architect re](# rchitect re) · [S  ety Model](#s  ety-model) · [Ro dm p](#ro dm p) · [Contrib ting](#contrib ting)
+[Quick Start](#quick-start) · [Architecture](#architecture) · [Safety Model](#safety-model) · [Roadmap](#roadmap) · [Contributing](#contributing)
 
 ---
 
-## C rrent St t s
+## Current Status
 
-> **M3D v1. .  — Fo nd tion l Rele se**
->
-> The initi l rele se est blishes the oper tion l dom in model, s  ety  rchitect re, environment  bstr ction, orchestr tion, CLI,  nd re l-environment testing.
+> **M3D v1.0.0 — Foundational Release**
 
-M3D is  n open-so rce Python r ntime  or b ilding oper tion l intelligence systems th t c n observe re l environments, investig te problems, re son  bo t possible c  ses,  pply policy  nd risk controls, exec te   thorized  ctions, veri y o tcomes,  nd m int in  n   dit ble oper tion l history.
+The initial release establishes the operational domain model, safety architecture, environment abstraction, orchestration, CLI, and real-environment testing.
 
-M3D is designed to sit between **AI re soning  nd re l-world oper tions**.
+M3D is an open-source Python runtime for building operational intelligence systems that can observe real environments, investigate problems, reason about possible causes, apply policy and risk controls, execute authorized actions, verify outcomes, and maintain an auditable operational history.
 
-> **AI m y re son  bo t the environment, b t M3D owns oper tion l tr th, policy, exec tion, veri ic tion,  nd   dit bility.**
+M3D is designed to sit between **AI reasoning and real-world operations**.
 
-```merm id
- lowch rt TD
-    AI[AI Re soning] --> OBS[Observe]
-    OBS --> INV[Investig te]
-    INV --> REA[Re son]
-    REA --> RISK[Assess Risk]
-    RISK --> POL[Apply Policy]
-    POL --> AUTH[A thorize]
+> **AI may reason about the environment, but M3D owns operational truth, policy, execution, verification, and auditability.**
+
+```mermaid
+flowchart TD
+    AI[AI Reasoning] --> OBS[Observe]
+    OBS --> INV[Investigate]
+    INV --> REASON[Reason]
+    REASON --> RISK[Assess Risk]
+    RISK --> POLICY[Apply Policy]
+    POLICY --> AUTH[Authorize]
     AUTH --> ACT[Act]
-    ACT --> VER[Veri y]
-    VER --> AUD[A dit]
-    AUD --> ENV[Oper tion l Environment]
+    ACT --> VERIFY[Verify]
+    VERIFY --> AUDIT[Audit]
+    AUDIT --> ENV[Operational Environment]
 ```
 
 ---
 
 ## Why M3D?
 
-AI systems  re becoming incre singly c p ble o  re soning, pl nning,  nd  sing tools.
+AI systems are becoming increasingly capable of reasoning, planning, and using tools.
 
-The di  ic lt p rt is wh t h ppens when  n AI system inter cts with   re l environment.
+The difficult part is what happens when an AI system interacts with a real environment.
 
-An oper tion l system needs to know:
+An operational system needs to know:
 
-- Wh t exists?
-- Wh t ch nged?
-- Wh t is    ected?
-- Wh t evidence s pports   concl sion?
-- Wh t co ld be c  sing the problem?
-- Wh t  ctions  re permitted?
-- Wh t risks  re involved?
-- Who   thorized  n  ction?
-- Wh t  ct  lly h ppened?
-- Did the  ction  chieve its intended res lt?
-- Wh t sho ld be recorded  or   t re investig tion?
+- What exists?
+- What changed?
+- What is affected?
+- What evidence supports a conclusion?
+- What could be causing the problem?
+- What actions are permitted?
+- What risks are involved?
+- Who authorized an action?
+- What actually happened?
+- Did the action achieve its intended result?
+- What should be recorded for future investigation?
 
-M3D provides   str ct red r ntime  or  nswering these q estions.
+M3D provides structured runtime primitives for answering these questions.
 
 Its core principle is:
 
-> **AI m y re son  bo t the environment, b t M3D owns oper tion l tr th, policy, exec tion, veri ic tion,  nd   dit bility.**
+> **AI may reason about the environment, but M3D owns operational truth, policy, execution, verification, and auditability.**
 
 ---
 
-## Wh t M3D Is
+## What M3D Is
 
-M3D is designed to sit between **AI re soning  nd re l-world oper tions**.
+M3D is designed to sit between **AI reasoning and real-world operations**.
 
-The go l is not to b ild  nother ch tbot, generic  gent  r mework, monitoring d shbo rd, or in r str ct re   tom tion tool.
+The goal is not to build another chatbot, generic agent framework, monitoring dashboard, or infrastructure automation tool.
 
-The go l is to provide the **oper tion l  o nd tion th t  llows intelligent systems to s  ely  nderst nd  nd  ct on re l environments.**
+The goal is to provide the **operational foundation that allows intelligent systems to safely understand and act on real environments**.
 
-M3D provides re s ble primitives  or:
+M3D provides reusable primitives for:
 
-- 🔍 Str ct red oper tion l investig tion
-- 🧠 Evidence-b sed re soning
-- 🛡️ Policy en orcement
-- ⚠️ Risk  ssessment
-- 🔐 Explicit   thoriz tion
-- ⚙️ Controlled exec tion
-- ✅ O tcome veri ic tion
-- 📜 Oper tion l   dit bility
-- 🔌 Extensible environment integr tions
-- 🧪 Testing  nd ev l  tion
+- 🔍 Structured operational investigation
+- 🧠 Evidence-based reasoning
+- 🛡️ Policy enforcement
+- ⚠️ Risk assessment
+- 🔐 Explicit authorization
+- ⚙️ Controlled execution
+- ✅ Outcome verification
+- 📜 Operational auditability
+- 🔌 Extensible environment integrations
+- 🧪 Testing and evaluation
 
 ---
 
-## Wh t M kes M3D Di  erent?
+## What Makes M3D Different
 
-M3D tre ts oper tions  s   str ct red li ecycle r ther th n   seq ence o  AI tool c lls.
+M3D treats operations as a structured lifecycle rather than a sequence of AI tool calls.
 
-```merm id
- lowch rt LR
-    OBS[Observe] --> UNDER[Underst nd]
-    UNDER --> INV[Investig te]
-    INV --> REASON[Re son]
+```mermaid
+flowchart LR
+    OBS[Observe] --> UNDER[Understand]
+    UNDER --> INV[Investigate]
+    INV --> REASON[Reason]
     REASON --> RISK[Assess Risk]
     RISK --> POLICY[Apply Policy]
-    POLICY --> AUTH[A thorize]
+    POLICY --> AUTH[Authorize]
     AUTH --> ACT[Act]
-    ACT --> VERIFY[Veri y]
-    VERIFY --> AUDIT[A dit]
-    AUDIT --> LEARN[Le rn]
+    ACT --> VERIFY[Verify]
+    VERIFY --> AUDIT[Audit]
+    AUDIT --> LEARN[Operational Learning]
 ```
 
-E ch st ge is represented by explicit dom in objects  nd controlled thro gh dedic ted engines  nd inter  ces.
+Each stage is represented by explicit domain objects and controlled through dedicated engines and interfaces.
 
-This cre tes   sep r tion between:
+This creates a separation between:
 
 | Responsibility | M3D |
 |---|---|
-| AI re soning | Intelligence |
-| Oper tion l st te | So rce o  tr th |
-| Evidence | Proven nce |
-| Investig tion | Str ct red re soning process |
-| Policy | A thority |
-| Risk | Conseq ence  ssessment |
-| A thoriz tion | Permission |
-| Action | Exec tion intent |
-| Action Res lt | Exec tion o tcome |
-| Veri ic tion | Proo  |
-| A dit | Acco nt bility |
+| AI reasoning | Intelligence |
+| Operational state | Source of truth |
+| Evidence | Provenance |
+| Investigation | Structured reasoning process |
+| Policy | Authority |
+| Risk | Consequence assessment |
+| Authorization | Permission |
+| Action | Execution intent |
+| Action Result | Execution outcome |
+| Verification | Proof |
+| Audit | Accountability |
 
-This sep r tion is   nd ment l to the  rchitect re.
+This separation is fundamental to the architecture.
 
 ---
 
 # Core Concepts
 
-M3D models oper tion l environments  sing explicit dom in concepts.
+M3D models operational environments using explicit domain concepts.
 
 ### Environment
 
-An oper tion l bo nd ry s ch  s:
+An operational boundary such as:
 
-- Lin x server
-- m cOS workst tion
+- Linux server
+- macOS workstation
 - Windows system
-- VMw re in r str ct re
+- VMware infrastructure
 - Docker environment
-- K bernetes cl ster
-- D t b se
-- Clo d environment
+- Kubernetes cluster
+- Database
+- Cloud environment
 - Network
-- AI  gent
-- Web  pplic tion
+- AI agent
+- Web application
 
 ### Entity
 
-An object inside  n environment.
+An object inside an environment.
 
-Ex mples:
+Examples:
 
 - Host
 - VM
 - Process
-- Cont iner
+- Container
 - Service
-- D t b se
+- Database
 - User
-- AI  gent
+- AI agent
 
-### Rel tionship
+### Relationship
 
-A  irst-cl ss rel tionship between entities.
+A first-class relationship between entities.
 
-Ex mples:
+Examples:
 
-~~~text
+```text
 HOSTS
 DEPENDS_ON
 RUNS_ON
 CONNECTS_TO
-~~~
+```
 
 ### Event
 
-An imm t ble   ct describing something th t h ppened or ch nged.
+An immutable fact describing something that happened or changed.
 
-Events cont in in orm tion s ch  s:
+Events contain information such as:
 
-- timest mp
-- so rce
+- timestamp
+- source
 - entity
 - event type
-- previo s st te
-- new st te
+- previous state
+- new state
 - severity
-- met d t 
-- correl tion ID
+- metadata
+- correlation ID
 
-### Investig tion
+### Investigation
 
-A str ct red process  or  nderst nding  n oper tion l sit  tion.
+A structured process for understanding an operational situation.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> CREATED
     CREATED --> SCOPING
     SCOPING --> COLLECTING
@@ -217,16 +217,16 @@ st teDi gr m-v
 
 ### Evidence
 
-In orm tion s pporting or we kening   hypothesis.
+Information supporting or weakening a hypothesis.
 
-Evidence m int ins proven nce so th t concl sions c n be tr ced b ck to observ tions.
+Evidence maintains provenance so that conclusions can be traced back to observations.
 
 ### Hypothesis
 
-A possible expl n tion  or  n observed sit  tion.
+A possible explanation for an observed situation.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> PROPOSED
     PROPOSED --> TESTING
     TESTING --> SUPPORTED
@@ -235,48 +235,48 @@ st teDi gr m-v
     SUPPORTED --> CONFIRMED
 ```
 
-A s pported hypothesis is not   tom tic lly con irmed. Con irm tion req ires s   icient evidence.
+A supported hypothesis is not automatically confirmed. Confirmation requires sufficient evidence.
 
 ### Decision
 
-A determin tion o  wh t sho ld h ppen.
+A determination of what should happen.
 
-A decision is sep r te  rom the re soning th t prod ced it  nd  rom the  ction th t m y event  lly implement it.
+A decision is separate from the reasoning that produced it and from the action that may eventually implement it.
 
 ### Risk
 
-An independent  ssessment o  potenti l conseq ences.
+An independent assessment of potential consequences.
 
-Risk considers   ctors s ch  s:
+Risk considers factors such as:
 
 - severity
-- prob bility
-- imp ct
+- probability
+- impact
 - reversibility
--    ected entities
-- mitig tion
-- req ired   thoriz tion
+- affected entities
+- mitigation
+- required authorization
 
 ### Policy
 
-R les governing wh t the system is  llowed to do.
+Rules governing what the system is allowed to do.
 
-Policies c n:
+Policies can:
 
-~~~text
+```text
 ALLOW
 DENY
 REQUIRE_APPROVAL
-~~~
+```
 
-AI re soning c nnot override policy.
+AI reasoning cannot override policy.
 
-### Policy Ev l  tion
+### Policy Evaluation
 
-The res lt o  ev l  ting  n  ction or decision  g inst  pplic ble policy.
+The result of evaluating an action or decision against applicable policy.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> PENDING
     PENDING --> EVALUATED
     EVALUATED --> ALLOWED
@@ -284,16 +284,16 @@ st teDi gr m-v
     EVALUATED --> REQUIRES_APPROVAL
 ```
 
-Policy ev l  tion is deliber tely sep r ted  rom policy de inition.
+Policy evaluation is deliberately separate from policy definition.
 
-### A thoriz tion
+### Authorization
 
-Permission to per orm  n oper tion l  ction.
+Permission to perform an operational action.
 
-A thoriz tion is deliber tely sep r te  rom the decision itsel .
+Authorization is deliberately separate from the decision itself.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> REQUESTED
     REQUESTED --> GRANTED
     REQUESTED --> DENIED
@@ -302,10 +302,10 @@ st teDi gr m-v
 
 ### Action
 
-An intended oper tion l oper tion.
+An intended operational operation.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> PROPOSED
     PROPOSED --> AUTHORIZED
     AUTHORIZED --> EXECUTING
@@ -316,18 +316,18 @@ st teDi gr m-v
     COMPLETED --> ROLLED_BACK
 ```
 
-### Action Res lt
+### Action Result
 
-The observed res lt o  exec ting  n  ction.
+The observed result of executing an action.
 
-Exec tion s ccess is not   tom tic lly considered oper tion l s ccess.
+Execution success is not automatically considered operational success.
 
-### Veri ic tion
+### Verification
 
-Veri ic tion determines whether the intended o tcome  ct  lly occ rred.
+Verification determines whether the intended outcome actually occurred.
 
-```merm id
-st teDi gr m-v 
+```mermaid
+stateDiagram-v2
     [*] --> PENDING
     PENDING --> IN_PROGRESS
     IN_PROGRESS --> VERIFIED
@@ -335,48 +335,53 @@ st teDi gr m-v
     IN_PROGRESS --> INCONCLUSIVE
 ```
 
-### A dit
+### Audit
 
-M3D m int ins  n imm t ble oper tion l history.
+M3D maintains an immutable operational history.
 
-The   dit l yer records wh t h ppened, who or wh t initi ted it, why it h ppened,  nd how the oper tion progressed.
+The audit layer records what happened, who or what initiated it, why it happened, and how the operation progressed.
 
 ---
 
-# Architect re
+# Architecture
 
-M3D  ses   ports- nd- d pters  rchitect re th t keeps the oper tion l core independent  rom in r str ct re, stor ge,  nd AI providers.
+M3D uses a ports-and-adapters architecture that keeps the operational core independent from infrastructure, storage, and AI providers.
 
-The  rchitect re is b ilt  ro nd   strict sep r tion o  responsibilities:
+The architecture is built around a strict separation of responsibilities:
 
-- **Dom in** de ines oper tion l tr th  nd st te.
-- **Ports** de ine contr cts between the core  nd extern l c p bilities.
-- **Engines** implement investig tion, policy, risk,  ction, veri ic tion,  nd   dit beh vior.
-- **Ad pters** connect those contr cts to re l environments, stor ge systems, event b ses,  nd re soning providers.
-- **Orchestr tion** coordin tes complete oper tion l work lows.
-- **Inter  ces** expose M3D to  sers  nd extern l systems.
+- **Domain** defines operational truth and state.
+- **Ports** define contracts between the core and external capabilities.
+- **Engines** implement investigation, policy, risk, action, verification, and audit behavior.
+- **Adapters** connect those contracts to real environments, storage systems, event buses, and reasoning providers.
+- **Orchestration** coordinates complete operational workflows.
+- **Interfaces** expose M3D to users and external systems.
 
-```merm id
- lowch rt TB
-    INTERFACES[Inter  ces] --> ORCH[Orchestr tion]
-    ORCH --> INVEST[Investig tion Engine]
+```mermaid
+flowchart TB
+    INTERFACES[Interfaces] --> ORCH[Orchestration]
+
+    ORCH --> INVEST[Investigation Engine]
     ORCH --> POLICY[Policy Engine]
     ORCH --> RISK[Risk Engine]
     ORCH --> ACTION[Action Engine]
-    ORCH --> VERIFY[Veri ic tion Engine]
-    ORCH --> AUDIT[A dit Engine]
+    ORCH --> VERIFY[Verification Engine]
+    ORCH --> AUDIT[Audit Engine]
+
     INVEST --> PORTS[Ports]
     POLICY --> PORTS
     RISK --> PORTS
     ACTION --> PORTS
     VERIFY --> PORTS
     AUDIT --> PORTS
-    PORTS --> ADAPTERS[Ad pters]
+
+    PORTS --> ADAPTERS[Adapters]
+
     ADAPTERS --> ENV[Environments]
-    ADAPTERS --> STORAGE[Stor ge]
-    ADAPTERS --> EVENTS[Event B s]
-    ADAPTERS --> AI[Re soning Providers]
-    DOMAIN[Dom in] --> INVEST
+    ADAPTERS --> STORAGE[Storage]
+    ADAPTERS --> EVENTS[Event Bus]
+    ADAPTERS --> AI[Reasoning Providers]
+
+    DOMAIN[Domain] --> INVEST
     DOMAIN --> POLICY
     DOMAIN --> RISK
     DOMAIN --> ACTION
@@ -384,709 +389,712 @@ The  rchitect re is b ilt  ro nd   strict sep r tion o  responsibilities:
     DOMAIN --> AUDIT
 ```
 
-The import nt bo nd ry is between the **M3D core**  nd its  d pters.
+The important boundary is between the **M3D core** and its adapters.
 
-The dom in does not know whether  n oper tion t rgets Lin x, m cOS, Windows, VMw re, Docker, K bernetes,   d t b se, or   clo d environment. It works with st ble dom in models  nd explicit port contr cts.
+The domain does not know whether an operation targets Linux, macOS, Windows, VMware, Docker, Kubernetes, a database, or a cloud environment. It works with stable domain models and explicit port contracts.
 
-Environment integr tions  re implemented  s  d pters:
+Environment integrations are implemented as adapters:
 
-```merm id
- lowch rt LR
+```mermaid
+flowchart LR
     PORTS[Environment Ports]
-    PORTS --> LINUX[Lin x]
-    PORTS --> MACOS[m cOS]
+    PORTS --> LINUX[Linux]
+    PORTS --> MACOS[macOS]
     PORTS --> WINDOWS[Windows]
-    PORTS --> VMWARE[VMw re]
+    PORTS --> VMWARE[VMware]
     PORTS --> DOCKER[Docker]
-    PORTS --> K8S[K bernetes]
-    PORTS --> CLOUD[Clo d]
-    PORTS --> DB[D t b ses]
+    PORTS --> K8S[Kubernetes]
+    PORTS --> CLOUD[Cloud]
+    PORTS --> DB[Databases]
 ```
 
-The s me principle  pplies to other repl ce ble c p bilities:
+The same principle applies to other replaceable capabilities:
 
-```merm id
- lowch rt LR
+```mermaid
+flowchart LR
     CORE[M3D Core]
-    CORE --> STORAGE[Stor ge Ad pters]
-    CORE --> EVENTS[Event B s Ad pters]
-    CORE --> REASONING[Re soning Ad pters]
-    CORE --> ENV[Environment Ad pters]
+    CORE --> STORAGE[Storage Adapters]
+    CORE --> EVENTS[Event Bus Adapters]
+    CORE --> REASONING[Reasoning Adapters]
+    CORE --> ENV[Environment Adapters]
+
     STORAGE --> SQLITE[SQLite]
     EVENTS --> MEMORY[In-Memory]
-    REASONING --> PROVIDERS[AI / Loc l Models]
-    ENV --> SYSTEMS[Oper tion l Environments]
+    REASONING --> PROVIDERS[AI / Local Models]
+    ENV --> SYSTEMS[Operational Environments]
 ```
 
-This  llows in r str ct re  nd AI providers to evolve witho t  orcing provider-speci ic concerns into the oper tion l dom in.
+This allows infrastructure and AI providers to evolve without forcing provider-specific concerns into the operational domain.
 
 ---
 
-## Architect r l L yers
+## Architectural Layers
 
-```merm id
- lowch rt TB
-    DOMAIN[Dom in] --> PORTS[Ports]
+```mermaid
+flowchart TB
+    DOMAIN[Domain] --> PORTS[Ports]
     PORTS --> ENGINES[Engines]
-    ORCHESTRATION[Orchestr tion] --> ENGINES
-    INTERFACES[Inter  ces] --> ORCHESTRATION
-    ADAPTERS[Ad pters] --> PORTS
+
+    ORCHESTRATION[Orchestration] --> ENGINES
+    INTERFACES[Interfaces] --> ORCHESTRATION
+
+    ADAPTERS[Adapters] --> PORTS
 ```
 
-### Dom in
+### Domain
 
-The dom in cont ins the oper tion l model: environments, entities, events, investig tions, evidence, hypotheses, decisions, risk, policy,   thoriz tion,  ctions, res lts, veri ic tion,  nd   dit records.
+The domain contains the operational model: environments, entities, events, investigations, evidence, hypotheses, decisions, risk, policy, authorization, actions, results, verification, and audit records.
 
 ### Ports
 
-Ports de ine contr cts  or c p bilities s ch  s environment  ccess, stor ge, re soning, event p blic tion,   thoriz tion, exec tion, veri ic tion,  nd   dit.
+Ports define contracts for capabilities such as environment access, storage, reasoning, event publication, authorization, execution, verification, and audit.
 
 ### Engines
 
-Engines implement oper tion l beh vior while rem ining independent o  concrete in r str ct re.
+Engines implement operational behavior while remaining independent of concrete infrastructure.
 
-### Ad pters
+### Adapters
 
-Ad pters implement ports  or speci ic environments  nd technologies.
+Adapters implement ports for specific environments and technologies.
 
-### Orchestr tion
+### Orchestration
 
-Orchestr tion coordin tes complete oper tion l  lows  cross the engines. It does not repl ce the dom in or the engines.
+Orchestration coordinates complete operational flows across the engines. It does not replace the domain or the engines.
 
-### Inter  ces
+### Interfaces
 
-Inter  ces expose M3D c p bilities to  sers  nd extern l systems, incl ding the comm nd-line inter  ce.
+Interfaces expose M3D capabilities to users and external systems, including the command-line interface.
 
-This str ct re keeps the core test ble, repl ce ble,  nd extensible while  llowing new environments, providers,  nd inter  ces to be  dded independently.
+This structure keeps the core testable, replaceable, and extensible while allowing new environments, providers, and interfaces to be added independently.
 
 ---
 
-# AI Is Not the So rce o  Tr th
+# AI Is Not the Source of Truth
 
-M3D deliber tely sep r tes intelligence  rom oper tion l   thority.
+M3D deliberately separates intelligence from operational authority.
 
-```merm id
- lowch rt TB
-    AI[AI Re soning] --> CORE[M3D Core]
-    CORE --> STATE[Oper tion l St te]
+```mermaid
+flowchart TB
+    AI[AI Reasoning] --> CORE[M3D Core]
+
+    CORE --> STATE[Operational State]
     CORE --> EVIDENCE[Evidence]
-    CORE --> INVESTIGATION[Investig tion]
+    CORE --> INVESTIGATION[Investigation]
     CORE --> POLICY[Policy]
     CORE --> RISK[Risk]
-    CORE --> AUTH[A thoriz tion]
-    CORE --> EXECUTION[Exec tion]
-    CORE --> VERIFICATION[Veri ic tion]
-    CORE --> AUDIT[A dit]
+    CORE --> AUTH[Authorization]
+    CORE --> EXECUTION[Execution]
+    CORE --> VERIFICATION[Verification]
+    CORE --> AUDIT[Audit]
 ```
 
-AI re soning providers c n be repl ced witho t ch nging the oper tion l model.
+AI reasoning providers can be replaced without changing the operational model.
 
-Potenti l providers incl de:
+Potential providers include:
 
 - OpenAI
 - Anthropic
-- Loc l models
-- F t re re soning systems
+- Local models
+- Future reasoning systems
 
-The AI l yer c n propose hypotheses, investig tion steps, concl sions,  nd decisions.
+The AI layer can propose hypotheses, investigation steps, conclusions, and decisions.
 
-The M3D core rem ins responsible  or oper tion l st te, evidence, policy,   thoriz tion, exec tion, veri ic tion,  nd   dit.
+The M3D core remains responsible for operational state, evidence, policy, authorization, execution, verification, and audit.
 
-# S  ety Model
+---
 
-M3D is designed  ro nd controlled   tonomy.
+# Safety Model
 
-An intelligent system sho ld not simply:
+M3D is designed around controlled autonomy.
 
-~~~text
-AI → Tool → Comm nd
-~~~
+An intelligent system should not simply:
 
-Inste d:
+```text
+AI → Tool → Command
+```
 
-```merm id
- lowch rt LR
+Instead:
+
+```mermaid
+flowchart LR
     THINK[Think] --> ASSESS[Assess]
     ASSESS --> POLICY[Policy]
     POLICY --> RISK[Risk]
-    RISK --> AUTH[A thoriz tion]
-    AUTH --> EXECUTE[Exec te]
-    EXECUTE --> VERIFY[Veri y]
-    VERIFY --> AUDIT[A dit]
+    RISK --> AUTH[Authorization]
+    AUTH --> EXECUTE[Execute]
+    EXECUTE --> VERIFY[Verify]
+    VERIFY --> AUDIT[Audit]
 ```
 
-This  llows systems to oper te with di  erent   tonomy levels.
+This allows systems to operate with different autonomy levels.
 
-### Observ tion Only
+### Observation Only
 
-The system c n inspect environments  nd collect in orm tion.
+The system can inspect environments and collect information.
 
-### Investig tion
+### Investigation
 
-The system c n investig te oper tion l sit  tions  nd develop hypotheses.
+The system can investigate operational situations and develop hypotheses.
 
-### Recommend tion
+### Recommendation
 
-The system c n propose  ctions witho t exec ting them.
+The system can propose actions without executing them.
 
-### Approv l-B sed Oper tions
+### Approval-Based Operations
 
-The system c n exec te  ctions   ter explicit   thoriz tion.
+The system can execute actions after explicit authorization.
 
-### Controlled A tonomy
+### Controlled Autonomy
 
-The system c n exec te pre-  thorized cl sses o  low-risk  ctions while m int ining veri ic tion  nd   dit bility.
+The system can execute pre-authorized classes of low-risk actions while maintaining verification and auditability.
 
-The r ntime is designed so th t incre sing   tonomy does not req ire removing the s  ety model.
+The runtime is designed so that increasing autonomy does not require removing the safety model.
 
 ---
 
-# Environment Abstr ction
+# Environment Abstraction
 
-M3D environments expose str ct red c p bilities thro gh environment pl gins.
+M3D environments expose structured capabilities through environment plugins.
 
-Concept  lly:
+Conceptually:
 
-~~~text
-identi y()
+```text
+identify()
 discover()
 observe()
 collect()
-exec te()
-veri y()
-~~~
+execute()
+verify()
+```
 
-This m kes it possible to  se the s me oper tion l model  cross di  erent environments.
+This makes it possible to use the same operational model across different environments.
 
-The initi l implement tion incl des:
+The initial implementation includes:
 
-- m cOS environment s pport
-- Lin x environment s pport
+- macOS environment support
+- Linux environment support
 - environment discovery
-- environment observ tion
-- environment d t  collection
-- controlled exec tion inter  ces
-- o tcome veri ic tion
+- environment observation
+- environment data collection
+- controlled execution interfaces
+- outcome verification
 
-Addition l  d pters c n be  dded witho t ch nging the core oper tion l model.
+Additional adapters can be added without changing the core operational model.
 
 ---
 
-# M3D v1. . 
+# M3D v1.0.0
 
-The initi l rele se est blishes the  o nd tion l oper tion l model.
+The initial release establishes the foundational operational model.
 
-C rrent c p bilities incl de:
+Current capabilities include:
 
-- imm t ble oper tion l dom in models
+- immutable operational domain models
 - environments
 - entities
-- rel tionships
+- relationships
 - events
-- investig tions
+- investigations
 - evidence
 - hypotheses
 - decisions
-- risk  ssessment
+- risk assessment
 - policies
-- policy ev l  tion
--   thoriz tion
--  ctions
--  ction res lts
-- veri ic tion
--   dit records
-- investig tion persistence inter  ces
-- event b s inter  ces
-- environment pl gin inter  ces
-- re soning inter  ces
+- policy evaluation
+- authorization
+- actions
+- action results
+- verification
+- audit records
+- investigation persistence interfaces
+- event bus interfaces
+- environment plugin interfaces
+- reasoning interfaces
 - policy engine
 - risk engine
--  ction engine
-- veri ic tion engine
--   dit engine
-- oper tion l orchestr tion
-- m cOS environment integr tion
-- Lin x environment integr tion
-- comm nd-line inter  ce
--  nit testing
-- integr tion testing
-- re l-environment m cOS testing
+- action engine
+- verification engine
+- audit engine
+- operational orchestration
+- macOS environment integration
+- Linux environment integration
+- command-line interface
+- unit testing
+- integration testing
+- real-environment macOS testing
 
-The project is intention lly  o nd tion l  t this st ge.
+The project is intentionally foundational at this stage.
 
-M3D v1. .  is **not positioned  s   prod ction   tonomo s IT oper tions pl t orm yet**.
+M3D v1.0.0 is **not positioned as a production autonomous IT operations platform yet**.
 
-It est blishes the  rchitect re  nd primitives req ired to b ild one.
+It establishes the architecture and primitives required to build one.
 
 ---
 
-# Q ick St rt
+# Quick Start
 
-A ter inst ll tion, inspect yo r loc l environment:
+After installation, inspect your local environment:
 
-~~~b sh
-m3d env in o
-~~~
+```bash
+m3d env info
+```
 
-Discover the entities M3D c n c rrently see:
+Discover the entities M3D can currently see:
 
-~~~b sh
+```bash
 m3d env list
-~~~
+```
 
-Observe the l test environment events:
+Observe the latest environment events:
 
-~~~b sh
+```bash
 m3d env events
-~~~
+```
 
-Collect det iled host in orm tion:
+Collect detailed host information:
 
-~~~b sh
+```bash
 m3d env get host
-~~~
+```
 
-A typic l  low looks like:
+A typical flow looks like:
 
-~~~text
-$ m3d env in o
-Environment: m cos_loc l
+```text
+$ m3d env info
+Environment: macos_local
 
 $ m3d env list
 HOST
   id: entity_...
-  n me: yo r-host
-  st t s: online
-~~~
+  name: your-host
+  status: online
+```
 
-This is intention lly sm ll in v1:
+This is intentionally small in v1:
 
 **connect → observe → inspect**
 
-The s me environment  bstr ction will l ter s pport investig tion, policy-controlled  ctions, veri ic tion,  nd   tonomo s oper tion l work lows.
+The same environment abstraction will later support investigation, policy-controlled actions, verification, and autonomous operational workflows.
 
 ---
 
-# Comm nd Line Inter  ce
+# Command Line Interface
 
-M3D c rrently provides   lightweight CLI.
+M3D currently provides a lightweight CLI.
 
-~~~b sh
+Show available commands:
+
+```bash
 m3d --help
-~~~
+```
 
-Displ y the  v il ble comm nds.
+Show information about the connected environment:
 
-~~~b sh
-m3d env in o
-~~~
+```bash
+m3d env info
+```
 
-Displ y in orm tion  bo t the connected environment.
+List discovered entities:
 
-~~~b sh
+```bash
 m3d env list
-~~~
+```
 
-List discovered entities.
+Display observed events:
 
-~~~b sh
+```bash
 m3d env events
-~~~
+```
 
-Displ y observed events.
+Collect detailed information about the host:
 
-~~~b sh
+```bash
 m3d env get host
-~~~
+```
 
-Collect det iled in orm tion  bo t the host.
-
-The CLI will evolve  longside the r ntime.
+The CLI will evolve alongside the runtime.
 
 ---
 
-# Inst ll tion
+# Installation
 
 Clone the repository:
 
-~~~b sh
-git clone https://gith b.com/M3DMedi /M3D.git
+```bash
+git clone https://github.com/M3DMedia/M3D.git
 cd M3D
-~~~
+```
 
-Cre te   Python environment:
+Create a Python environment:
 
-~~~b sh
-cond  cre te -n m3d python=3.13
-cond   ctiv te m3d
-~~~
+```bash
+conda create -n m3d python=3.13
+conda activate m3d
+```
 
-Inst ll M3D in edit ble mode:
+Install M3D in editable mode:
 
-~~~b sh
-pip inst ll -e .
-~~~
+```bash
+pip install -e .
+```
 
-Inst ll development dependencies:
+Install development dependencies:
 
-~~~b sh
-pip inst ll -e ".[dev]"
-~~~
+```bash
+pip install -e ".[dev]"
+```
 
-R n the test s ite:
+Run the test suite:
 
-~~~b sh
+```bash
 pytest
-~~~
+```
 
 ---
 
 # Development
 
-M3D c rrently t rgets Python 3.13+.
+M3D currently targets Python 3.13+.
 
-Development tooling incl des:
+Development tooling includes:
 
 - pytest
 - pytest-cov
-- R   
+- Ruff
 - mypy
 
-Code q  lity c n be checked with:
+Check code quality with:
 
-~~~b sh
-r    check .
-~~~
+```bash
+ruff check .
+```
 
-Type checking c n be per ormed with:
+Run type checking with:
 
-~~~b sh
+```bash
 mypy src
-~~~
+```
 
-Tests c n be exec ted with:
+Run tests with:
 
-~~~b sh
+```bash
 pytest
-~~~
+```
 
-The project is intended to m int in strict sep r tion between dom in logic, inter  ces, engines,  nd in r str ct re  d pters.
+The project maintains strict separation between domain logic, interfaces, engines, and infrastructure adapters.
 
 ---
 
 # Testing
 
-M3D is being developed with testing  s p rt o  the  rchitect re r ther th n  s    in l v lid tion step.
+M3D is being developed with testing as part of the architecture rather than as a final validation step.
 
-The test s ite covers:
+The test suite covers:
 
-~~~text
+```text
 tests/
-├──  nit/
-├── integr tion/
-├── scen rios/
-└── benchm rks/
-~~~
+├── unit/
+├── integration/
+├── scenarios/
+└── benchmarks/
+```
 
-The v1 development b seline incl des h ndreds o    tom ted tests covering the dom in model, engines, ports,  d pters, orchestr tion,  nd re l m cOS integr tion.
+The v1 development baseline includes hundreds of automated tests covering the domain model, engines, ports, adapters, orchestration, and real macOS integration.
 
-Re l-environment testing is especi lly import nt bec  se oper tion l so tw re m st be v lid ted  g inst  ct  l systems r ther th n only mocked environments.
+Real-environment testing is especially important because operational software must be validated against actual systems rather than only mocked environments.
 
 ---
 
-# Project Str ct re
+# Project Structure
 
-~~~text
+```text
 M3D/
 ├── src/m3d/
-│   ├── dom in/
+│   ├── domain/
 │   │   ├── environment/
 │   │   ├── entity/
-│   │   ├── rel tionship/
+│   │   ├── relationship/
 │   │   ├── event/
-│   │   ├── investig tion/
+│   │   ├── investigation/
 │   │   ├── evidence/
 │   │   ├── hypothesis/
 │   │   ├── decision/
 │   │   ├── risk/
 │   │   ├── policy/
-│   │   ├── policy_ev l  tion/
-│   │   ├──   thoriz tion/
-│   │   ├──  ction/
-│   │   ├──  ction_res lt/
-│   │   ├── veri ic tion/
-│   │   ├──   dit/
+│   │   ├── policy_evaluation/
+│   │   ├── authorization/
+│   │   ├── action/
+│   │   ├── action_result/
+│   │   ├── verification/
+│   │   ├── audit/
 │   │   └── common/
-│   │
 │   ├── ports/
 │   ├── engines/
-│   ├──  d pters/
-│   ├── r ntime/
-│   └── inter  ces/
+│   ├── adapters/
+│   ├── runtime/
+│   └── interfaces/
 │       └── cli/
-│
 ├── tests/
-│   ├──  nit/
-│   ├── integr tion/
-│   ├── scen rios/
-│   └── benchm rks/
-│
-├── ex mples/
+│   ├── unit/
+│   ├── integration/
+│   ├── scenarios/
+│   └── benchmarks/
+├── examples/
 ├── docs/
-├── benchm rks/
+├── benchmarks/
 ├── pyproject.toml
 ├── README.md
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── LICENSE
 └── .gitignore
-~~~
+```
 
 ---
 
 # Who Is M3D For?
 
-M3D is intended  or people b ilding systems th t need to re son  bo t  nd oper te re l environments.
+M3D is intended for people building systems that need to reason about and operate real environments.
 
 ### Developers
 
-B ilding AI-powered oper tion l systems witho t h ving to reinvent:
+Building AI-powered operational systems without having to reinvent:
 
-- st te m n gement
-- investig tion models
-- policy en orcement
--   thoriz tion
-- exec tion
-- veri ic tion
--   dit bility
+- state management
+- investigation models
+- policy enforcement
+- authorization
+- execution
+- verification
+- auditability
 
 ### AI Engineers
 
-B ilding  gents th t need to inter ct with re l in r str ct re while m int ining explicit oper tion l controls.
+Building agents that need to interact with real infrastructure while maintaining explicit operational controls.
 
-### Pl t orm  nd In r str ct re Te ms
+### Platform and Infrastructure Teams
 
-Cre ting   tom tion  nd oper tion l intelligence systems  cross heterogeneo s environments.
+Creating automation and operational intelligence systems across heterogeneous environments.
 
-### Sec rity Te ms
+### Security Teams
 
-B ilding systems where  ctions req ire explicit policy,   thoriz tion, veri ic tion,  nd   dit tr ils.
+Building systems where actions require explicit policy, authorization, verification, and audit trails.
 
-### Comp nies
+### Companies
 
-Using M3D  s  n open  o nd tion  or intern l oper tion l intelligence systems or commerci l prod cts.
+Using M3D as an open foundation for internal operational intelligence systems or commercial products.
 
-### Rese rchers
+### Researchers
 
 Experimenting with:
 
--   tonomo s oper tions
-- AI re soning
--  gent s  ety
-- oper tion l decision m king
-- veri ic tion
-- h m n-in-the-loop systems
-- AI ev l  tion
+- autonomous operations
+- AI reasoning
+- agent safety
+- operational decision making
+- verification
+- human-in-the-loop systems
+- AI evaluation
 
 ---
 
-# Ro dm p
+# Roadmap
 
-The project is expected to evolve thro gh sever l st ges.
+The project is expected to evolve through several stages.
 
-## v1 — Fo nd tion
+## v1 — Foundation
 
-Est blish the oper tion l model  nd core  rchitect re.
+Establish the operational model and core architecture.
 
-~~~text
-Dom in
+```text
+Domain
 Ports
 Engines
-Ad pters
-Orchestr tion
+Adapters
+Orchestration
 CLI
 Testing
-~~~
+```
 
-## v1.x — R ntime
+## v1.x — Runtime
 
-Introd ce the r ntime l yer th t connects the  o nd tion l components into   coherent oper tion l exec tion environment.
+Introduce the runtime layer that connects the foundational components into a coherent operational execution environment.
 
-Potenti l  re s incl de:
+Potential areas include:
 
-- event-driven orchestr tion
-- persistent r ntime st te
-- sched ling
-- oper tion l work lows
+- event-driven orchestration
+- persistent runtime state
+- scheduling
+- operational workflows
 - richer environment discovery
-- pl gin m n gement
-- r ntime con ig r tion
+- plugin management
+- runtime configuration
 
-## v  — A tonomo s Oper tions
+## v2 — Autonomous Operations
 
-Exp nd the re soning  nd oper tion l c p bilities.
+Expand reasoning and operational capabilities.
 
-Potenti l  re s incl de:
+Potential areas include:
 
--  dv nced investig tions
-- m lti-step oper tions
--   tonomo s remedi tion
-- m lti- gent coordin tion
-- oper tion l memory
-- richer veri ic tion
-- sim l tion environments
-- policy-driven   tonomy
+- advanced investigations
+- multi-step operations
+- autonomous remediation
+- multi-agent coordination
+- operational memory
+- richer verification
+- simulation environments
+- policy-driven autonomy
 
-## F t re
+## Future
 
-The long-term direction is  n ecosystem  ro nd oper tion l intelligence.
+The long-term direction is an ecosystem around operational intelligence.
 
-Potenti l components incl de:
+Potential components include:
 
-~~~text
+```text
 M3D Core
     │
-    ├── Environment Pl gins
-    ├── Re soning Providers
-    ├── Policy P cks
-    ├── Oper tion l Pl ybooks
-    ├── Veri ic tion Mod les
-    ├── Benchm rks
-    ├── Integr tions
-    └── Comm nity Knowledge
-~~~
+    ├── Environment Plugins
+    ├── Reasoning Providers
+    ├── Policy Packs
+    ├── Operational Playbooks
+    ├── Verification Modules
+    ├── Benchmarks
+    ├── Integrations
+    └── Community Knowledge
+```
 
 ---
 
-# Contrib ting
+# Contributing
 
-M3D is intended to become   comm nity-driven project.
+M3D is intended to become a community-driven project.
 
-Contrib tions  re welcome  cross:
+Contributions are welcome across:
 
 - Python development
-- environment  d pters
-- AI re soning integr tions
+- environment adapters
+- AI reasoning integrations
 - policy systems
-- veri ic tion
+- verification
 - testing
-- benchm rks
-- doc ment tion
-- sec rity
-- oper tion l rese rch
-- ex mples  nd  se c ses
+- benchmarks
+- documentation
+- security
+- operational research
+- examples and use cases
 
-The project is especi lly interested in contrib tors who w nt to explore the bo nd ry between **AI re soning  nd s  e re l-world  ction**.
+The project is especially interested in contributors who want to explore the boundary between **AI reasoning and safe real-world action**.
 
-See `CONTRIBUTING.md`  or development g idelines.
+See `CONTRIBUTING.md` for development guidelines.
 
 ---
 
 # Design Principles
 
-M3D is b ilt  ro nd sever l principles.
+M3D is built around several principles.
 
-### 1. AI sho ld not own oper tion l tr th
+### 1. AI should not own operational truth
 
-Models c n re son  bo t st te, b t the r ntime m int ins the   thorit tive oper tion l model.
+Models can reason about state, but the runtime maintains the authoritative operational model.
 
-###  . Actions m st be controlled
+### 2. Actions must be controlled
 
-Exec tion sho ld p ss thro gh policy, risk,   thoriz tion,  nd veri ic tion.
+Execution should pass through policy, risk, authorization, and verification.
 
-### 3. Evidence m tters
+### 3. Evidence matters
 
-Concl sions sho ld be tr ce ble to observ tions  nd evidence.
+Conclusions should be traceable to observations and evidence.
 
-### 4. Veri ic tion is p rt o  the oper tion
+### 4. Verification is part of the operation
 
-A s ccess  l comm nd is not necess rily   s ccess  l oper tion.
+A successful command is not necessarily a successful operation.
 
-### 5. A dit bility is p rt o  the  rchitect re
+### 5. Auditability is part of the architecture
 
-Oper tion l history sho ld not be  n   tertho ght.
+Operational history should not be an afterthought.
 
-### 6. Environments sho ld be repl ce ble
+### 6. Environments should be replaceable
 
-The core sho ld not be co pled to   speci ic in r str ct re provider.
+The core should not be coupled to a specific infrastructure provider.
 
-###  . A tonomy sho ld be controll ble
+### 7. Autonomy should be controllable
 
-The system sho ld s pport h m n oversight  nd progressively incre sing levels o    tonomy.
+The system should support human oversight and progressively increasing levels of autonomy.
 
-### 8. The  rchitect re sho ld rem in extensible
+### 8. The architecture should remain extensible
 
-New environments, AI providers, policies, veri ic tion methods,  nd oper tion l c p bilities sho ld be  dd ble witho t rewriting the core.
-
----
-
-# Comm nity
-
-M3D is  n open-so rce project  nd welcomes:
-
-- ⭐ St rs  nd  ollows
-- 🐛 B g reports
-- 💡 Fe t re propos ls
-- 🔌 Pl gin contrib tions
-- 🧪 Experiments  nd benchm rks
-- 🔧 P ll req ests
-- 💬 Architect re disc ssions
-
-Use  l st rting points:
-
-- [Repository](https://gith b.com/M3DMedi /M3D)
-- [Iss es](https://gith b.com/M3DMedi /M3D/iss es)
-- [Disc ssions](https://gith b.com/M3DMedi /M3D/disc ssions)
-
-I  M3D is  se  l to yo ,   GitH b st r helps other developers discover the project.
+New environments, AI providers, policies, verification methods, and operational capabilities should be addable without rewriting the core.
 
 ---
 
-# Sec rity
+# Community
 
-Oper tion l so tw re req ires   strong sec rity model.
+M3D is an open-source project and welcomes:
 
-Sec rity iss es sho ld be reported responsibly r ther th n disclosed p blicly  s ordin ry GitH b iss es.
+- ⭐ Stars and follows
+- 🐛 Bug reports
+- 💡 Feature proposals
+- 🔌 Plugin contributions
+- 🧪 Experiments and benchmarks
+- 🔧 Pull requests
+- 💬 Architecture discussions
 
-See `SECURITY.md`  or the project sec rity policy.
+Useful starting points:
+
+- [Repository](https://github.com/M3DMedia/M3D)
+- [Issues](https://github.com/M3DMedia/M3D/issues)
+- [Discussions](https://github.com/M3DMedia/M3D/discussions)
+
+If M3D is useful to you, a GitHub star helps other developers discover the project.
+
+---
+
+# Security
+
+Operational software requires a strong security model.
+
+Security issues should be reported responsibly rather than disclosed publicly as ordinary GitHub issues.
+
+See `SECURITY.md` for the project security policy.
 
 ---
 
 # License
 
-M3D is rele sed  nder the **Ap che License  . **.
+M3D is released under the **Apache License 2.0**.
 
-See `LICENSE`  or the complete license text.
+See `LICENSE` for the complete license text.
 
 ---
 
 # The Vision
 
-The   t re o  AI oper tions sho ld not be:
+The future of AI operations should not be:
 
-~~~text
-AI → Tool → Comm nd
-~~~
-
-It sho ld be:
-
-```merm id
- lowch rt TB
-    ENV[Environment] --> OBS[Observ tion]
-    OBS --> UNDER[Underst nding]
-    UNDER --> INV[Investig tion]
-    INV --> REASON[Re soning]
-    REASON --> RISK[Risk]
-    RISK --> POLICY[Policy]
-    POLICY --> AUTH[A thoriz tion]
-    AUTH --> ACTION[Action]
-    ACTION --> VERIFY[Veri ic tion]
-    VERIFY --> AUDIT[A dit]
-    AUDIT --> LEARN[Oper tion l Le rning]
+```text
+AI → Tool → Command
 ```
 
-M3D is being b ilt to provide the r ntime  nderne th th t model.
+It should be:
 
-The long-term go l is  n open ecosystem where developers, comp nies, rese rchers,  nd in r str ct re te ms c n b ild incre singly c p ble oper tion l intelligence systems on top o    common,   dit ble  o nd tion.
+```mermaid
+flowchart TB
+    ENV[Environment] --> OBS[Observation]
+    OBS --> UNDER[Understanding]
+    UNDER --> INV[Investigation]
+    INV --> REASON[Reasoning]
+    REASON --> RISK[Risk]
+    RISK --> POLICY[Policy]
+    POLICY --> AUTH[Authorization]
+    AUTH --> ACTION[Action]
+    ACTION --> VERIFY[Verification]
+    VERIFY --> AUDIT[Audit]
+    AUDIT --> LEARN[Operational Learning]
+```
 
-**M3D — Oper tion l Intelligence R ntime.**
+M3D is being built to provide the runtime underneath that model.
+
+The long-term goal is an open ecosystem where developers, companies, researchers, and infrastructure teams can build increasingly capable operational intelligence systems on top of a common, auditable foundation.
+
+**M3D — Operational Intelligence Runtime.**
