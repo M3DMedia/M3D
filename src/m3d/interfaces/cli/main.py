@@ -74,11 +74,90 @@ def main() -> None:
         parser.print_help()
 
 
+def _format_bytes(value: object) -> str:
+    """Format a byte count for human-readable CLI output."""
+    if not isinstance(value, int):
+        return "unknown"
+
+    units = ("B", "KB", "MB", "GB", "TB", "PB")
+    size = float(value)
+
+    for unit in units:
+        if size < 1024 or unit == units[-1]:
+            return f"{size:.1f} {unit}"
+        size /= 1024
+
+    return f"{size:.1f} PB"
+
+
+def _format_uptime(value: object) -> str:
+    """Format uptime seconds for human-readable CLI output."""
+    if not isinstance(value, (int, float)):
+        return "unknown"
+
+    total_seconds = max(0, int(value))
+    days, remainder = divmod(total_seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    parts: list[str] = []
+
+    if days:
+        parts.append(f"{days} day{'s' if days != 1 else ''}")
+    if hours:
+        parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
+    if minutes:
+        parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
+    if seconds or not parts:
+        parts.append(f"{seconds} second{'s' if seconds != 1 else ''}")
+
+    return ", ".join(parts)
+
+
 def _env_info() -> None:
-    """Display information about the local macOS environment."""
+    """Display detailed information about the local macOS environment."""
     environment = MacOSEnvironmentPlugin()
-    environment_id = environment.identify()
-    print(f"Environment: {environment_id}")
+    details = environment.collect("host")
+
+    print("ENVIRONMENT")
+    print(f"  id: {environment.identify()}")
+    print()
+
+    print("HOST")
+    print(f"  hostname: {details['hostname']}")
+    print(f"  system: {details['system']}")
+    print(f"  release: {details['release']}")
+    print(f"  machine: {details['machine']}")
+    print(f"  processor: {details['processor']}")
+    print(f"  architecture: {details['architecture']}")
+    print(f"  logical_cpus: {details['cpu_count']}")
+    print(f"  memory: {_format_bytes(details['memory_total_bytes'])}")
+    print(f"  uptime: {_format_uptime(details['uptime_seconds'])}")
+    print()
+
+    hardware = details["hardware"]
+    if isinstance(hardware, dict):
+        print("HARDWARE")
+        for key, value in hardware.items():
+            print(f"  {key}: {value}")
+        print()
+
+    software = details["software"]
+    if isinstance(software, dict):
+        print("SOFTWARE")
+        for key, value in software.items():
+            print(f"  {key}: {value}")
+        print()
+
+    storage = details["storage"]
+    if isinstance(storage, dict):
+        print("STORAGE")
+        print(f"  mount_point: {storage['mount_point']}")
+        print(f"  total: {_format_bytes(storage['total_bytes'])}")
+        print(f"  used: {_format_bytes(storage['used_bytes'])}")
+        print(f"  free: {_format_bytes(storage['free_bytes'])}")
+        print(f"  usage: {storage['usage_percent']}%")
+
 
 
 def _env_list() -> None:
