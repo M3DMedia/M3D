@@ -137,6 +137,192 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
         boot_timestamp = int(match.group(1))
         return max(0.0, time.time() - boot_timestamp)
 
+    def _network_interfaces(self) -> list[dict[str, object]]:
+        """Collect network interface information from macOS."""
+        output = self._run_command(["ifconfig"])
+        interfaces: list[dict[str, object]] = []
+        current: dict[str, object] | None = None
+
+        for line in output.splitlines():
+            header_match = re.match(r"^([A-Za-z0-9_.-]+):\s+flags=", line)
+
+            if header_match:
+                if current is not None:
+                    interfaces.append(current)
+
+                current = {
+                    "name": header_match.group(1),
+                    "status": "inactive",
+                    "mac_address": None,
+                    "ipv4_addresses": [],
+                    "ipv6_addresses": [],
+                }
+
+                flags_match = re.search(r"flags=\d+<([^>]+)>", line)
+                if flags_match:
+                    flags = flags_match.group(1).split(",")
+                    current["status"] = (
+                        "active"
+                        if "UP" in flags and "RUNNING" in flags
+                        else "inactive"
+                    )
+
+                continue
+
+            if current is None:
+                continue
+
+            stripped = line.strip()
+
+            if stripped.startswith("ether "):
+                current["mac_address"] = stripped.split()[1]
+                continue
+
+            if stripped.startswith("inet "):
+                address = stripped.split()[1]
+                addresses = current["ipv4_addresses"]
+
+                if isinstance(addresses, list):
+                    addresses.append(address)
+
+                continue
+
+            if stripped.startswith("inet6 "):
+                address = stripped.split()[1].split("%", 1)[0]
+                addresses = current["ipv6_addresses"]
+
+                if isinstance(addresses, list):
+                    addresses.append(address)
+
+        if current is not None:
+            interfaces.append(current)
+
+        return interfaces
+
+    def _default_gateway(self) -> str | None:
+        """Return the IPv4 default gateway reported by macOS."""
+        output = self._run_command(["route", "-n", "get", "default"])
+
+        for line in output.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("gateway:"):
+                gateway = stripped.split(":", 1)[1].strip()
+                return gateway or None
+
+        return None
+
+    def _dns_servers(self) -> list[str]:
+        """Return DNS servers configured on macOS."""
+        output = self._run_command(["scutil", "--dns"])
+        servers: list[str] = []
+
+        for line in output.splitlines():
+            stripped = line.strip()
+
+            if not stripped.startswith("nameserver["):
+                continue
+
+            if " : " not in stripped:
+                continue
+
+            address = stripped.split(" : ", 1)[1].strip()
+
+            if address and address not in servers:
+                servers.append(address)
+
+        return servers
+
+    def _software_updates(self) -> dict[str, object]:
+        """Collect available macOS system software updates."""
+        output = self._run_command(
+            ["softwareupdate", "--list", "--include-config-data"]
+        )
+
+        updates: list[dict[str, object]] = []
+
+        current_label: str | None = None
+        current_metadata: str | None = None
+
+        def add_update(label: str, metadata: str) -> None:
+            title: str | None = None
+            version: str | None = None
+            size_bytes: int | None = None
+            recommended = False
+            action: str | None = None
+
+            title_match = re.search(
+                r"Title:\s*(.*?)(?:,\s*Version:|$)",
+                metadata,
+            )
+            if title_match:
+                title = title_match.group(1).strip()
+
+            version_match = re.search(
+                r"Version:\s*([^,]+)",
+                metadata,
+            )
+            if version_match:
+                version = version_match.group(1).strip()
+
+            size_match = re.search(
+                r"Size:\s*([0-9]+)KiB",
+                metadata,
+            )
+            if size_match:
+                size_bytes = int(size_match.group(1)) * 1024
+
+            recommended_match = re.search(
+                r"Recommended:\s*(YES|NO)",
+                metadata,
+                re.IGNORECASE,
+            )
+            if recommended_match:
+                recommended = (
+                    recommended_match.group(1).upper() == "YES"
+                )
+
+            action_match = re.search(
+                r"Action:\s*([^,]+)",
+                metadata,
+            )
+            if action_match:
+                action = action_match.group(1).strip()
+
+            updates.append(
+                {
+                    "label": label,
+                    "title": title,
+                    "version": version,
+                    "size_bytes": size_bytes,
+                    "recommended": recommended,
+                    "action": action,
+                }
+            )
+
+        for line in output.splitlines():
+            stripped = line.strip()
+
+            if stripped.startswith("* Label:"):
+                if current_label is not None and current_metadata is not None:
+                    add_update(current_label, current_metadata)
+
+                current_label = stripped[len("* Label:") :].strip()
+                current_metadata = None
+                continue
+
+            if current_label is not None and stripped.startswith("Title:"):
+                current_metadata = stripped
+                continue
+
+        if current_label is not None and current_metadata is not None:
+            add_update(current_label, current_metadata)
+
+        return {
+            "status": "updates_available" if updates else "up_to_date",
+            "available_count": len(updates),
+            "updates": updates,
+        }
+
     def _storage_information(self) -> dict[str, object]:
         """Collect storage information for the root filesystem."""
         total, used, free = shutil.disk_usage("/")
@@ -227,6 +413,12 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
             "hardware": hardware,
             "software": software,
             "storage": self._storage_information(),
+            "network": {
+                "interfaces": self._network_interfaces(),
+                "default_gateway": self._default_gateway(),
+                "dns_servers": self._dns_servers(),
+            },
+            "updates": self._software_updates(),
         }
 
     def execute(

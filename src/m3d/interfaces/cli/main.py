@@ -149,7 +149,119 @@ def _env_info() -> None:
             print(f"  {key}: {value}")
         print()
 
-    storage = details["storage"]
+    network = details["network"]
+    if isinstance(network, dict):
+        print("NETWORK")
+        print()
+
+        interfaces = network["interfaces"]
+
+        if isinstance(interfaces, list):
+            visible_interfaces = []
+
+            for interface in interfaces:
+                if not isinstance(interface, dict):
+                    continue
+
+                name = interface["name"]
+                ipv4 = interface["ipv4_addresses"]
+                ipv6 = interface["ipv6_addresses"]
+
+                has_ipv4 = isinstance(ipv4, list) and bool(ipv4)
+
+                has_global_ipv6 = (
+                    isinstance(ipv6, list)
+                    and any(
+                        not address.lower().startswith(("fe80:", "::1"))
+                        for address in ipv6
+                    )
+                )
+
+                is_loopback = name == "lo0"
+
+                if is_loopback or has_ipv4 or has_global_ipv6:
+                    visible_interfaces.append(interface)
+
+            print("  interfaces:")
+
+            if visible_interfaces:
+                for interface in visible_interfaces:
+                    print(f"    {interface['name']}")
+                    print(f"      status: {interface['status']}")
+
+                    ipv4 = interface["ipv4_addresses"]
+                    if isinstance(ipv4, list):
+                        print(
+                            f"      ipv4: {', '.join(ipv4) if ipv4 else 'none'}"
+                        )
+
+                    ipv6 = interface["ipv6_addresses"]
+                    if isinstance(ipv6, list):
+                        print(
+                            f"      ipv6: {', '.join(ipv6) if ipv6 else 'none'}"
+                        )
+            else:
+                print("    none")
+
+        gateway = network["default_gateway"]
+        print(f"  default_gateway: {gateway or 'none'}")
+
+        dns_servers = network["dns_servers"]
+        if isinstance(dns_servers, list):
+            print(
+                f"  dns_servers: "
+                f"{', '.join(dns_servers) if dns_servers else 'none'}"
+            )
+
+        print()
+
+    updates = details["updates"]
+    if isinstance(updates, dict):
+        print("UPDATES")
+        print()
+
+        status = updates["status"]
+        available_count = updates["available_count"]
+
+        print(f"  status: {status}")
+        print(f"  available: {available_count}")
+        print()
+
+        available_updates = updates["updates"]
+
+        if isinstance(available_updates, list):
+            for update in available_updates:
+                if not isinstance(update, dict):
+                    continue
+
+                title = update["title"]
+                version = update["version"]
+                size_bytes = update["size_bytes"]
+                recommended = update["recommended"]
+                action = update["action"]
+
+                display_title = title or update["label"]
+                version_text = version or "unknown"
+
+                if isinstance(size_bytes, int):
+                    size_text = _format_bytes(size_bytes)
+                else:
+                    size_text = "unknown"
+
+                print(f"  {display_title}")
+                print(f"    version: {version_text}")
+                print(f"    size: {size_text}")
+                print(
+                    "    recommended: "
+                    f"{'yes' if recommended else 'no'}"
+                )
+
+                if action:
+                    print(f"    action: {action}")
+
+                print()
+
+        storage = details["storage"]
     if isinstance(storage, dict):
         print("STORAGE")
         print(f"  mount_point: {storage['mount_point']}")
