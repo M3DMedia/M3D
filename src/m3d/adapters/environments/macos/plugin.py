@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import time
+from collections.abc import Callable
 
 from m3d.domain.common.types import EntityId, EnvironmentId, EventId, new_id, utc_now
 from m3d.domain.entity import Entity
@@ -388,7 +389,11 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
             )
         ]
 
-    def collect(self, target: str) -> dict[str, object]:
+    def collect(
+        self,
+        target: str,
+        progress: Callable[[str], None] | None = None,
+    ) -> dict[str, object]:
         """Collect detailed information about a macOS target."""
         if not target.strip():
             raise ValueError("Collection target cannot be empty.")
@@ -396,8 +401,30 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
         if target != "host":
             raise ValueError(f"Unsupported collection target: {target}")
 
+        def report(message: str) -> None:
+            if progress is not None:
+                progress(message)
+
+        report("Checking hardware information...")
         hardware = self._hardware_information()
+
+        report("Checking software information...")
         software = self._software_information()
+
+        report("Checking network interfaces...")
+        interfaces = self._network_interfaces()
+
+        report("Checking default gateway...")
+        default_gateway = self._default_gateway()
+
+        report("Checking DNS configuration...")
+        dns_servers = self._dns_servers()
+
+        report("Checking system updates...")
+        updates = self._software_updates()
+
+        report("Checking storage...")
+        storage = self._storage_information()
 
         return {
             "target": "host",
@@ -412,13 +439,13 @@ class MacOSEnvironmentPlugin(EnvironmentPlugin):
             "uptime_seconds": self._uptime_seconds(),
             "hardware": hardware,
             "software": software,
-            "storage": self._storage_information(),
+            "storage": storage,
             "network": {
-                "interfaces": self._network_interfaces(),
-                "default_gateway": self._default_gateway(),
-                "dns_servers": self._dns_servers(),
+                "interfaces": interfaces,
+                "default_gateway": default_gateway,
+                "dns_servers": dns_servers,
             },
-            "updates": self._software_updates(),
+            "updates": updates,
         }
 
     def execute(

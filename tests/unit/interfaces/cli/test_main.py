@@ -163,3 +163,80 @@ def test_env_info_formats_missing_update_metadata(capsys) -> None:
     assert "version: unknown" in output
     assert "size: unknown" in output
     assert "recommended: no" in output
+
+
+def test_env_info_displays_collection_progress(capsys) -> None:
+    details = _sample_details()
+    progress_messages: list[str] = []
+
+    def collect(target: str, progress=None) -> dict[str, object]:
+        assert target == "host"
+        assert progress is not None
+
+        for message in (
+            "Checking hardware information...",
+            "Checking software information...",
+            "Checking network interfaces...",
+            "Checking default gateway...",
+            "Checking DNS configuration...",
+            "Checking system updates...",
+            "Checking storage...",
+        ):
+            progress_messages.append(message)
+            progress(message)
+
+        return details
+
+    with (
+        patch(
+            "m3d.interfaces.cli.main.MacOSEnvironmentPlugin.collect",
+            side_effect=collect,
+        ),
+        patch(
+            "m3d.interfaces.cli.main.MacOSEnvironmentPlugin.identify",
+            return_value="macos_test",
+        ),
+    ):
+        _env_info()
+
+    output = capsys.readouterr().out
+
+    expected_progress = [
+        "Checking hardware information... done",
+        "Checking software information... done",
+        "Checking network interfaces... done",
+        "Checking default gateway... done",
+        "Checking DNS configuration... done",
+        "Checking system updates... done",
+        "Checking storage... done",
+    ]
+
+    assert progress_messages == [
+        message.removesuffix("...")
+        + "..."
+        for message in progress_messages
+    ]
+
+    progress_start = output.index("Checking hardware information...")
+    environment_start = output.index("ENVIRONMENT")
+    progress_output = output[progress_start:environment_start]
+
+    assert all(message in progress_output for message in expected_progress)
+    assert progress_output.index(expected_progress[0]) < progress_output.index(
+        expected_progress[1]
+    )
+    assert progress_output.index(expected_progress[1]) < progress_output.index(
+        expected_progress[2]
+    )
+    assert progress_output.index(expected_progress[2]) < progress_output.index(
+        expected_progress[3]
+    )
+    assert progress_output.index(expected_progress[3]) < progress_output.index(
+        expected_progress[4]
+    )
+    assert progress_output.index(expected_progress[4]) < progress_output.index(
+        expected_progress[5]
+    )
+    assert progress_output.index(expected_progress[5]) < progress_output.index(
+        expected_progress[6]
+    )

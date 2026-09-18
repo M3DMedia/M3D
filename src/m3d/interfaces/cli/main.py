@@ -117,7 +117,27 @@ def _format_uptime(value: object) -> str:
 def _env_info() -> None:
     """Display detailed information about the local macOS environment."""
     environment = MacOSEnvironmentPlugin()
-    details = environment.collect("host")
+
+    current_status: str | None = None
+
+    def show_progress(message: str) -> None:
+        nonlocal current_status
+
+        if current_status is not None:
+            print(" done", flush=True)
+
+        current_status = message
+        print(message, end="", flush=True)
+
+    def finish_progress() -> None:
+        nonlocal current_status
+
+        if current_status is not None:
+            print(" done", flush=True)
+            current_status = None
+
+    details = environment.collect("host", progress=show_progress)
+    finish_progress()
 
     print("ENVIRONMENT")
     print(f"  id: {environment.identify()}")

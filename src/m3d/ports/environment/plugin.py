@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from typing import Any
 
 from m3d.domain.common.types import EnvironmentId
@@ -29,7 +30,11 @@ class EnvironmentPlugin(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def collect(self, target: str) -> dict[str, Any]:
+    def collect(
+        self,
+        target: str,
+        progress: Callable[[str], None] | None = None,
+    ) -> dict[str, Any]:
         """Collect detailed information about a target in the environment."""
         raise NotImplementedError
 

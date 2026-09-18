@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import platform
+from collections.abc import Callable
 
 from m3d.domain.common.types import EntityId, EnvironmentId, EventId, new_id, utc_now
 from m3d.domain.entity import Entity
@@ -71,7 +72,11 @@ class LinuxEnvironmentPlugin(EnvironmentPlugin):
             )
         ]
 
-    def collect(self, target: str) -> dict[str, object]:
+    def collect(
+        self,
+        target: str,
+        progress: Callable[[str], None] | None = None,
+    ) -> dict[str, object]:
         """Collect detailed information about a Linux target."""
         if not target.strip():
             raise ValueError("Collection target cannot be empty.")
